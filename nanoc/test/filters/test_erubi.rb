@@ -8,7 +8,8 @@ class Nanoc::Filters::ErubiTest < Nanoc::TestCase
     filter = ::Nanoc::Filters::Erubi.new(location: 'a cheap motel')
 
     # Run filter
-    result = filter.setup_and_run('<%= "I was hiding in #{@location}." %>') # rubocop:disable Lint/InterpolationCheck
+    result = filter.setup_and_run('<%= "I was hiding in #{@location}." %>')
+
     assert_equal('I was hiding in a cheap motel.', result)
   end
 
@@ -17,7 +18,8 @@ class Nanoc::Filters::ErubiTest < Nanoc::TestCase
     filter = ::Nanoc::Filters::Erubi.new(location: 'a cheap motel')
 
     # Run filter
-    result = filter.setup_and_run('<%= "I was hiding in #{location}." %>') # rubocop:disable Lint/InterpolationCheck
+    result = filter.setup_and_run('<%= "I was hiding in #{location}." %>')
+
     assert_equal('I was hiding in a cheap motel.', result)
   end
 
@@ -25,7 +27,7 @@ class Nanoc::Filters::ErubiTest < Nanoc::TestCase
     # Create filter
     item = Nanoc::Core::Item.new('asdf', {}, '/about.md')
     item_rep = Nanoc::Core::ItemRep.new(item, :xml)
-    filter = ::Nanoc::Filters::Erubi.new(item: item, item_rep: item_rep)
+    filter = ::Nanoc::Filters::Erubi.new(item:, item_rep:)
 
     # Run filter
     raised = false
@@ -35,6 +37,7 @@ class Nanoc::Filters::ErubiTest < Nanoc::TestCase
       assert_match 'syntax error', e.message
       raised = true
     end
+
     assert raised
   end
 
@@ -42,7 +45,7 @@ class Nanoc::Filters::ErubiTest < Nanoc::TestCase
     # Create filter
     item = Nanoc::Core::Item.new('asdf', {}, '/about.md')
     item_rep = Nanoc::Core::ItemRep.new(item, :xml)
-    filter = ::Nanoc::Filters::Erubi.new(item: item, item_rep: item_rep)
+    filter = ::Nanoc::Filters::Erubi.new(item:, item_rep:)
 
     # Run filter
     raised = false
@@ -52,6 +55,7 @@ class Nanoc::Filters::ErubiTest < Nanoc::TestCase
       assert_match 'item /about.md (rep xml):1', e.backtrace.join("\n")
       raised = true
     end
+
     assert raised
   end
 
@@ -60,7 +64,8 @@ class Nanoc::Filters::ErubiTest < Nanoc::TestCase
     filter = ::Nanoc::Filters::Erubi.new(content: 'a cheap motel')
 
     # Run filter
-    result = filter.setup_and_run('<%= "I was hiding in #{yield}." %>') # rubocop:disable Lint/InterpolationCheck
+    result = filter.setup_and_run('<%= "I was hiding in #{yield}." %>')
+
     assert_equal('I was hiding in a cheap motel.', result)
   end
 
@@ -70,13 +75,14 @@ class Nanoc::Filters::ErubiTest < Nanoc::TestCase
 
     # Run filter
     assert_raises LocalJumpError do
-      filter.setup_and_run('<%= "I was hiding in #{yield}." %>') # rubocop:disable Lint/InterpolationCheck
+      filter.setup_and_run('<%= "I was hiding in #{yield}." %>')
     end
   end
 
   def test_filter_with_erbout
     filter = ::Nanoc::Filters::Erubi.new
     result = filter.setup_and_run('stuff<% _erbout << _erbout %>')
+
     assert_equal 'stuffstuff', result
   end
 end

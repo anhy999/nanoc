@@ -58,7 +58,7 @@ describe Nanoc::CLI::ErrorHandler, stdio: true do
   end
 
   describe '#handle_error' do
-    subject { error_handler.handle_error(error, exit_on_error: exit_on_error) }
+    subject { error_handler.handle_error(error, exit_on_error:) }
 
     let(:error) do
       raise 'Bewm'
@@ -118,6 +118,34 @@ describe Nanoc::CLI::ErrorHandler, stdio: true do
         end
       end
 
+      context 'when error implements #full_message', stdio: true do
+        let(:klass) do
+          Class.new(StandardError) do
+            def self.to_s
+              'SubclassOfStandardError'
+            end
+
+            def full_message
+              "okay so what I mean is that #{message}"
+            end
+          end
+        end
+
+        let(:error) do
+          raise klass.new('it is broken')
+        rescue => e
+          return e
+        end
+
+        it 'prints error message followed by error detail' do
+          subject
+
+          expect($stderr.string).to match(
+            %r{SubclassOfStandardError: it is broken.*okay so what I mean is that it is broken}m,
+          )
+        end
+      end
+
       context 'non-trivial error' do
         # …
       end
@@ -148,6 +176,16 @@ describe Nanoc::CLI::ErrorHandler, stdio: true do
       missing = requires - described
 
       expect(missing).to be_empty
+    end
+  end
+
+  describe '#handle_while' do
+    it 'makes #exit bubble up a SystemExit' do
+      expect do
+        error_handler.handle_while(exit_on_error: false) do
+          exit(0)
+        end
+      end.to raise_error(SystemExit)
     end
   end
 end

@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-usage 'show-rules [thing]'
+usage 'show-rules'
 aliases :explain
 summary 'describe the rules for each item'
 description "
@@ -22,8 +22,8 @@ module Nanoc::OrigCLI::Commands
       items = site.items.sort_by(&:identifier)
       layouts = site.layouts.sort_by(&:identifier)
 
-      items.each   { |e| explain_item(e, rules: rules, reps: reps) }
-      layouts.each { |e| explain_layout(e, rules: rules) }
+      items.each   { |e| explain_item(e, rules:, reps:) }
+      layouts.each { |e| explain_layout(e, rules:) }
     end
 
     def explain_item(item, rules:, reps:)

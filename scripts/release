@@ -26,10 +26,13 @@ version_constant =
     'nanoc-core' => 'Nanoc::Core::VERSION',
     'nanoc-cli' => 'Nanoc::CLI::VERSION',
     'nanoc-checking' => 'Nanoc::Checking::VERSION',
+    'nanoc-dart-sass' => 'Nanoc::DartSass::VERSION',
     'nanoc-deploying' => 'Nanoc::Deploying::VERSION',
     'nanoc-external' => 'Nanoc::External::VERSION',
+    'nanoc-org-mode' => 'Nanoc::OrgMode::VERSION',
     'nanoc-live' => 'Nanoc::Live::VERSION',
     'nanoc-spec' => 'Nanoc::Spec::VERSION',
+    'nanoc-tilt' => 'Nanoc::Tilt::VERSION',
     'guard-nanoc' => 'Guard::GUARD_NANOC_VERSION',
   }.fetch(gem_name) do
     $stderr.puts "Error: Unknown gem name: #{gem_name}"
@@ -42,10 +45,13 @@ gem_dir =
     'nanoc-core' => 'nanoc-core',
     'nanoc-cli' => 'nanoc-cli',
     'nanoc-checking' => 'nanoc-checking',
+    'nanoc-dart-sass' => 'nanoc-dart-sass',
     'nanoc-deploying' => 'nanoc-deploying',
     'nanoc-external' => 'nanoc-external',
+    'nanoc-org-mode' => 'nanoc-org-mode',
     'nanoc-live' => 'nanoc-live',
     'nanoc-spec' => 'nanoc-spec',
+    'nanoc-tilt' => 'nanoc-tilt',
     'guard-nanoc' => 'guard-nanoc',
   }.fetch(gem_name) do
     $stderr.puts "Error: Unknown gem name: #{gem_name}"
@@ -58,10 +64,13 @@ gem_path =
     'nanoc-core' => 'nanoc/core',
     'nanoc-cli' => 'nanoc/cli',
     'nanoc-checking' => 'nanoc/checking',
+    'nanoc-dart-sass' => 'nanoc/dart_sass',
     'nanoc-deploying' => 'nanoc/deploying',
     'nanoc-external' => 'nanoc/external',
+    'nanoc-org-mode' => 'nanoc/org_mode',
     'nanoc-live' => 'nanoc/live',
     'nanoc-spec' => 'nanoc/spec',
+    'nanoc-tilt' => 'nanoc/tilt',
     'guard-nanoc' => 'guard/nanoc',
   }.fetch(gem_name) do
     $stderr.puts "Error: Unknown gem name: #{gem_name}"

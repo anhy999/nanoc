@@ -15,7 +15,7 @@ describe Nanoc::Core::Store do
 
   describe '#tmp_path_for' do
     context 'passing config' do
-      subject { described_class.tmp_path_for(config: config, store_name: 'giraffes') }
+      subject { described_class.tmp_path_for(config:, store_name: 'giraffes') }
 
       def gen_hash(path)
         Digest::SHA1.hexdigest(File.absolute_path(path))[0..12]
@@ -89,7 +89,7 @@ describe Nanoc::Core::Store do
   end
 
   it 'deletes and reloads on error' do
-    store = test_store_klass.new('test.db', 1)
+    store = test_store_klass.new('test', 1)
 
     # Create
     store.load
@@ -97,16 +97,37 @@ describe Nanoc::Core::Store do
     store.store
 
     # Test stored values
-    store = test_store_klass.new('test.db', 1)
+    store = test_store_klass.new('test', 1)
     store.load
     expect(store.data).to eq(fun: 'sure')
 
     # Mess up
-    File.write('test.db', 'Damn {}#}%@}$^)@&$&*^#@ broken stores!!!')
+    File.write('test.data.db', 'Damn {}#}%@}$^)@&$&*^#@ broken stores!!!')
 
     # Reload
-    store = test_store_klass.new('test.db', 1)
+    store = test_store_klass.new('test', 1)
     store.load
     expect(store.data).to be_nil
+  end
+
+  it 'can write humongous amounts of data' do
+    # Skip running on GitHub actions etc because this thing just uses far too many resources
+    skip 'GitHub Actions does not give us enough resources to run this' if ENV['CI']
+
+    store = test_store_klass.new('test', 1)
+
+    # Create huge string
+    array = []
+    100.times do |i|
+      raw = 'x' * 1_000_037
+      raw << i.to_s
+      io = StringIO.new
+      100.times { io << raw }
+      array << io.string
+    end
+
+    # Write
+    store.data = { data: array }
+    expect { store.store }.not_to raise_exception
   end
 end

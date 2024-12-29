@@ -23,6 +23,7 @@ class Nanoc::RuleDSL::CompilerDSLTest < Nanoc::TestCase
     io = capturing_stdio do
       compiler_dsl.preprocess {}
     end
+
     assert_empty io[:stdout]
     assert_empty io[:stderr]
 
@@ -30,6 +31,7 @@ class Nanoc::RuleDSL::CompilerDSLTest < Nanoc::TestCase
     io = capturing_stdio do
       compiler_dsl.preprocess {}
     end
+
     assert_empty io[:stdout]
     assert_match(/WARNING: A preprocess block is already defined./, io[:stderr])
   end
@@ -42,6 +44,7 @@ class Nanoc::RuleDSL::CompilerDSLTest < Nanoc::TestCase
     io = capturing_stdio do
       compiler_dsl.postprocess {}
     end
+
     assert_empty io[:stdout]
     assert_empty io[:stderr]
 
@@ -49,6 +52,7 @@ class Nanoc::RuleDSL::CompilerDSLTest < Nanoc::TestCase
     io = capturing_stdio do
       compiler_dsl.postprocess {}
     end
+
     assert_empty io[:stdout]
     assert_match(/WARNING: A postprocess block is already defined./, io[:stderr])
   end
@@ -264,6 +268,7 @@ class Nanoc::RuleDSL::CompilerDSLTest < Nanoc::TestCase
     err = assert_raises(Nanoc::Core::TrivialError) do
       compiler_dsl.create_pattern('/foo/*')
     end
+
     assert_equal 'Invalid string_pattern_type: ', err.message
   end
 
@@ -271,16 +276,24 @@ class Nanoc::RuleDSL::CompilerDSLTest < Nanoc::TestCase
     compiler_dsl = Nanoc::RuleDSL::CompilerDSL.new(nil, string_pattern_type: 'glob')
 
     pattern = compiler_dsl.create_pattern('/foo/*')
+
+    # rubocop:disable Minitest/AssertMatch
+    # rubocop:disable Minitest/RefuteMatch
     assert pattern.match?('/foo/aaaa')
     refute pattern.match?('/foo/aaaa/')
     refute pattern.match?('/foo/a/a/a/a')
+    # rubocop:enable Minitest/RefuteMatch
+    # rubocop:enable Minitest/AssertMatch Minitest/RefuteMatch
   end
 
   def test_create_pattern_with_regex
     compiler_dsl = Nanoc::RuleDSL::CompilerDSL.new(nil, string_pattern_type: 'glob')
 
     pattern = compiler_dsl.create_pattern(%r{\A/foo/a*/})
+
+    # rubocop:disable Minitest/AssertMatch
     assert pattern.match?('/foo/aaaa/')
+    # rubocop:enable Minitest/AssertMatch
   end
 
   def test_create_pattern_with_string_with_unknown_string_pattern_type
@@ -289,6 +302,7 @@ class Nanoc::RuleDSL::CompilerDSLTest < Nanoc::TestCase
     err = assert_raises(Nanoc::Core::TrivialError) do
       compiler_dsl.create_pattern('/foo/*')
     end
+
     assert_equal 'Invalid string_pattern_type: donkey', err.message
   end
 
@@ -381,8 +395,13 @@ class Nanoc::RuleDSL::CompilerDSLTest < Nanoc::TestCase
     assert_equal(expected.source,    actual.source)
     assert_equal(expected.casefold?, actual.casefold?)
     assert_equal(expected.options,   actual.options)
+
+    # rubocop:disable Minitest/AssertMatch
+    # rubocop:disable Minitest/RefuteMatch
     assert('/foo/bar/' =~ actual)
     refute('/foo/' =~ actual)
+    # rubocop:enable Minitest/RefuteMatch
+    # rubocop:enable Minitest/AssertMatch
   end
 
   def test_identifier_to_regex_with_full_identifier
@@ -394,9 +413,13 @@ class Nanoc::RuleDSL::CompilerDSLTest < Nanoc::TestCase
 
     assert_equal(expected.to_s, actual.to_s)
 
+    # rubocop:disable Minitest/AssertMatch
+    # rubocop:disable Minitest/RefuteMatch
     assert('/favicon.ico' =~ actual)
     assert('/favicon.ico/' =~ actual)
     refute('/faviconxico' =~ actual)
+    # rubocop:enable Minitest/RefuteMatch
+    # rubocop:enable Minitest/AssertMatch
   end
 
   def test_dsl_has_no_access_to_compiler
@@ -410,6 +433,7 @@ class Nanoc::RuleDSL::CompilerDSLTest < Nanoc::TestCase
     $venetian = 'unsnares'
     compiler_dsl = Nanoc::RuleDSL::CompilerDSL.new(nil, venetian: 'snares')
     compiler_dsl.instance_eval { $venetian = @config[:venetian] }
+
     assert_equal 'snares', $venetian
   end
 
@@ -417,6 +441,7 @@ class Nanoc::RuleDSL::CompilerDSLTest < Nanoc::TestCase
     $venetian = 'unsnares'
     compiler_dsl = Nanoc::RuleDSL::CompilerDSL.new(nil, venetian: 'snares')
     compiler_dsl.instance_eval { $venetian = config[:venetian] }
+
     assert_equal 'snares', $venetian
   end
 end

@@ -11,7 +11,6 @@ module Nanoc
 end
 
 # Load general requirements
-require 'base64'
 require 'cgi'
 require 'digest'
 require 'English'
@@ -44,6 +43,7 @@ Nanoc::DataSource = Nanoc::Core::DataSource
 Nanoc::Filter = Nanoc::Core::Filter
 Nanoc::Error = Nanoc::Core::Error
 Nanoc::Check = Nanoc::Checking::Check
+Nanoc::Pattern = Nanoc::Core::Pattern
 
 # Load Nanoc
 require 'nanoc/version'

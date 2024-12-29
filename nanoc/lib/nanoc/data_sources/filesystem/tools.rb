@@ -67,7 +67,7 @@ class Nanoc::DataSources::Filesystem < Nanoc::DataSource
               fn
             else
               all_files_in(absolute_target, extra_files, recursion_limit - 1).map do |sfn|
-                fn + sfn[absolute_target.size..-1]
+                fn + sfn[absolute_target.size..]
               end
             end
           end
@@ -111,9 +111,9 @@ class Nanoc::DataSources::Filesystem < Nanoc::DataSource
         when nil
           []
         when String
-          ["#{dir_name}/#{extra_files}"]
+          ["#{dir_name}/#{extra_files.dup.delete_prefix('/')}"]
         when Array
-          extra_files.map { |extra_file| "#{dir_name}/#{extra_file}" }
+          extra_files.map { |extra_file| "#{dir_name}/#{extra_file.dup.delete_prefix('/')}" }
         else
           raise(
             Nanoc::Core::TrivialError,
@@ -141,7 +141,7 @@ class Nanoc::DataSources::Filesystem < Nanoc::DataSource
     #   detected (something other than file, directory or link)
     def resolve_symlink(filename, recursion_limit = 5)
       target = File.readlink(filename)
-      absolute_target = File.expand_path(target, File.dirname(filename))
+      absolute_target = Nanoc::Core::Utils.expand_path_without_drive_identifier(target, File.dirname(filename))
 
       case File.ftype(absolute_target)
       when 'link'

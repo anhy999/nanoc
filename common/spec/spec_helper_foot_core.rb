@@ -10,7 +10,7 @@ ensure
   Dir.chdir(here)
 end
 
-def __nanoc_core_with_env_vars(hash, &_block)
+def __nanoc_core_with_env_vars(hash, &)
   orig_env_hash = ENV.to_hash
   hash.each_pair { |k, v| ENV[k] = v }
   yield
@@ -21,7 +21,10 @@ end
 RSpec.configure do |c|
   c.include(Nanoc::Spec::Helper)
 
+  # TODO: Now that HelperHelper is used for filters too, maybe it is worth
+  # renaming it to DataHelper or so.
   c.include(Nanoc::Spec::HelperHelper, helper: true)
+  c.include(Nanoc::Spec::HelperHelper, filter: true)
 
   c.threadsafe = false
 
@@ -103,7 +106,7 @@ RSpec::Matchers.define :send_notification do |name, *expected_args|
   end
 
   failure_message do |_actual|
-    s = +"expected that proc would send notification #{name.inspect} with args #{expected_args.inspect}"
+    s = "expected that proc would send notification #{name.inspect} with args #{expected_args.inspect}"
     if @actual_notifications.any?
       s << " (received #{@actual_notifications.size} times with other arguments: #{@actual_notifications.map(&:inspect).join(', ')})"
     end

@@ -15,14 +15,14 @@ describe Nanoc::Filters::ERB do
 
     it 'can access assign through instance variable' do
       result = filter.setup_and_run(
-        '<%= "I was hiding in #{@location}." %>', # rubocop:disable Lint/InterpolationCheck
+        '<%= "I was hiding in #{@location}." %>',
       )
       expect(result).to eq('I was hiding in a cheap motel.')
     end
 
     it 'can access assign through instance method' do
       result = filter.setup_and_run(
-        '<%= "I was hiding in #{location}." %>', # rubocop:disable Lint/InterpolationCheck
+        '<%= "I was hiding in #{location}." %>',
       )
       expect(result).to eq('I was hiding in a cheap motel.')
     end
@@ -38,21 +38,21 @@ describe Nanoc::Filters::ERB do
 
     it 'can access assign through instance variable' do
       result = filter.setup_and_run(
-        '<%= "I was hiding in #{@content}." %>', # rubocop:disable Lint/InterpolationCheck
+        '<%= "I was hiding in #{@content}." %>',
       )
       expect(result).to eq('I was hiding in a cheap motel.')
     end
 
     it 'can access assign through instance method' do
       result = filter.setup_and_run(
-        '<%= "I was hiding in #{content}." %>', # rubocop:disable Lint/InterpolationCheck
+        '<%= "I was hiding in #{content}." %>',
       )
       expect(result).to eq('I was hiding in a cheap motel.')
     end
 
     it 'can access assign through yield' do
       result = filter.setup_and_run(
-        '<%= "I was hiding in #{yield}." %>', # rubocop:disable Lint/InterpolationCheck
+        '<%= "I was hiding in #{yield}." %>',
       )
       expect(result).to eq('I was hiding in a cheap motel.')
     end
@@ -64,7 +64,7 @@ describe Nanoc::Filters::ERB do
 
     it 'can access assign through instance variable' do
       result = filter.setup_and_run(
-        '<%= "I was hiding in #{@location}." %>', # rubocop:disable Lint/InterpolationCheck
+        '<%= "I was hiding in #{@location}." %>',
         params,
       )
       expect(result).to eq('I was hiding in a cheap motel.')
@@ -72,7 +72,7 @@ describe Nanoc::Filters::ERB do
 
     it 'can access assign through instance method' do
       result = filter.setup_and_run(
-        '<%= "I was hiding in #{location}." %>', # rubocop:disable Lint/InterpolationCheck
+        '<%= "I was hiding in #{location}." %>',
         params,
       )
       expect(result).to eq('I was hiding in a cheap motel.')
@@ -84,7 +84,7 @@ describe Nanoc::Filters::ERB do
       filter.setup_and_run('<% raise "boom %>')
     end
 
-    let(:filter) { described_class.new(layout: layout) }
+    let(:filter) { described_class.new(layout:) }
 
     let(:layout) { Nanoc::Core::Layout.new('asdf', {}, '/default.erb') }
 
@@ -96,7 +96,8 @@ describe Nanoc::Filters::ERB do
           e
         end
 
-      expect(error.message).to start_with('layout /default.erb:1: unterminated string meets end of file')
+      expect(error.message).to start_with('layout /default.erb:1:')
+      expect(error.message).to include('unterminated string meets end of file')
     end
   end
 
@@ -112,7 +113,7 @@ describe Nanoc::Filters::ERB do
     context 'trim mode unchanged' do
       let(:params) do
         {
-          locals: { res: res },
+          locals: { res: },
         }
       end
 
@@ -125,7 +126,7 @@ describe Nanoc::Filters::ERB do
       let(:params) do
         {
           trim_mode: '%',
-          locals: { res: res },
+          locals: { res: },
         }
       end
 

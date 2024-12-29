@@ -20,12 +20,12 @@ class Nanoc::Helpers::CapturingTest < Nanoc::TestCase
 
     site =
       Nanoc::Core::Site.new(
-        config: config,
+        config:,
         code_snippets: [],
         data_source: Nanoc::Core::InMemoryDataSource.new(items, layouts),
       )
 
-    compiled_content_cache = Nanoc::Core::CompiledContentCache.new(config: config)
+    compiled_content_cache = Nanoc::Core::CompiledContentCache.new(config:)
 
     action_provider =
       Class.new(Nanoc::Core::ActionProvider) do
@@ -38,19 +38,19 @@ class Nanoc::Helpers::CapturingTest < Nanoc::TestCase
 
     compilation_context =
       Nanoc::Core::CompilationContext.new(
-        action_provider: action_provider,
-        reps: reps,
-        site: site,
-        compiled_content_cache: compiled_content_cache,
-        compiled_content_store: compiled_content_store,
+        action_provider:,
+        reps:,
+        site:,
+        compiled_content_cache:,
+        compiled_content_store:,
       )
 
     Nanoc::Core::ViewContextForCompilation.new(
-      reps: reps,
-      items: items,
+      reps:,
+      items:,
       dependency_tracker: Nanoc::Core::DependencyTracker::Null.new,
-      compilation_context: compilation_context,
-      compiled_content_store: compiled_content_store,
+      compilation_context:,
+      compiled_content_store:,
     )
   end
 
@@ -76,11 +76,13 @@ class Nanoc::Helpers::CapturingTest < Nanoc::TestCase
       # Compile once
       File.write('content/includee.erb', '{<% content_for :blah do %>Old content<% end %>}')
       Nanoc::CLI.run(%w[compile])
+
       assert_equal '[Old content]', File.read('output/includer/index.html')
 
       # Compile again
       File.write('content/includee.erb', '{<% content_for :blah do %>New content<% end %>}')
       Nanoc::CLI.run(%w[compile])
+
       assert_equal '[New content]', File.read('output/includer/index.html')
     end
   end
@@ -114,6 +116,7 @@ class Nanoc::Helpers::CapturingTest < Nanoc::TestCase
 
     expected = %w[head before basic after foot]
     actual   = result.scan(/[a-z]+/)
+
     assert_equal expected, actual
   end
 
@@ -135,11 +138,13 @@ class Nanoc::Helpers::CapturingTest < Nanoc::TestCase
       # Compile once
       File.write('content/includee.erb', '{<% content_for :blah do %>Old content<% end %>}')
       Nanoc::CLI.run(%w[compile])
+
       assert_equal '{[nil-Old content]}', File.read('output/includer/index.html')
 
       # Compile again
       File.write('content/includee.erb', '{<% content_for :blah do %>New content<% end %>}')
       Nanoc::CLI.run(%w[compile])
+
       assert_equal '{[nil-New content]}', File.read('output/includer/index.html')
     end
   end
@@ -159,6 +164,7 @@ class Nanoc::Helpers::CapturingTest < Nanoc::TestCase
       end
 
       Nanoc::CLI.run(%w[compile])
+
       assert_equal 'Foo!', File.read('output/self/index.html')
     end
   end
@@ -176,12 +182,14 @@ class Nanoc::Helpers::CapturingTest < Nanoc::TestCase
       # Compile once
       File.write('content/includer.erb', 'Old-<%= content_for(@items["/includee/"], :blah) %>')
       Nanoc::CLI.run(%w[compile])
+
       assert_equal '{}', File.read('output/includee/index.html')
       assert_equal 'Old-Content', File.read('output/includer/index.html')
 
       # Compile again
       File.write('content/includer.erb', 'New-<%= content_for(@items["/includee/"], :blah) %>')
       Nanoc::CLI.run(%w[compile])
+
       assert_equal '{}', File.read('output/includee/index.html')
       assert_equal 'New-Content', File.read('output/includer/index.html')
     end

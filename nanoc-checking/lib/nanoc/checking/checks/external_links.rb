@@ -13,7 +13,7 @@ module Nanoc
           # Find all broken external hrefs
           # TODO: de-duplicate this (duplicated in internal links check)
           filenames = output_html_filenames.reject { |f| excluded_file?(f) }
-          hrefs_with_filenames = ::Nanoc::Extra::LinkCollector.new(filenames, :external).filenames_per_href
+          hrefs_with_filenames = ::Nanoc::Checking::LinkCollector.new(filenames, :external).filenames_per_href
           results = select_invalid(hrefs_with_filenames.keys.shuffle)
 
           # Report them
@@ -43,6 +43,13 @@ module Nanoc
         end
 
         def validate(href)
+          # Skip javascript: URLs
+          #
+          # This needs to be handled explicitly, because URI.parse does not
+          # like `javascript:` URLs -- presumably because those are not
+          # technically valid URLs.
+          return nil if href.start_with?('javascript:')
+
           # Parse
           url = nil
           begin
@@ -71,7 +78,8 @@ module Nanoc
               next
             end
 
-            if /^3..$/.match?(res.code)
+            case res.code
+            when /^3..$/
               if i == 4
                 return Result.new(href, 'too many redirects')
               end
@@ -87,7 +95,7 @@ module Nanoc
               end
 
               url = URI.parse(location)
-            elsif res.code == '200'
+            when '200'
               return nil
             else
               return Result.new(href, res.code)

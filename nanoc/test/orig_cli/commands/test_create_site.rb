@@ -68,7 +68,6 @@ class Nanoc::CLI::Commands::CreateSiteTest < Nanoc::TestCase
   def test_default_encoding
     unless defined?(Encoding)
       skip 'No Encoding class'
-      return
     end
 
     original_encoding = Encoding.default_external
@@ -82,6 +81,7 @@ class Nanoc::CLI::Commands::CreateSiteTest < Nanoc::TestCase
       exception = assert_raises(Nanoc::DataSources::Filesystem::Errors::InvalidEncoding) do
         Nanoc::Core::SiteLoader.new.new_from_cwd
       end
+
       assert_equal 'Could not read content/index.html because the file is not valid UTF-8.', exception.message
 
       # Try with encoding = specific
@@ -145,6 +145,15 @@ class Nanoc::CLI::Commands::CreateSiteTest < Nanoc::TestCase
       assert_match(/Foo/, File.read('output/foo/index.html'))
       assert_match(/Bar Index/, File.read('output/bar/index.html'))
       assert_match(/Bar Qux/, File.read('output/bar/qux/index.html'))
+    end
+  end
+
+  def test_create_site_gemfile
+    Nanoc::CLI.run %w[create_site foo]
+
+    FileUtils.cd('foo') do
+      assert File.file?('Gemfile')
+      assert_match(/^gem 'nanoc', '~> 4.13'$/, File.read('Gemfile'))
     end
   end
 end

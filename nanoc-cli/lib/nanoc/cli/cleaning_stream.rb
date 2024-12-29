@@ -54,7 +54,7 @@ module Nanoc
 
       # @see IO#tty?
       def tty?
-        @cached_is_tty ||= @stream.tty?
+        @_tty_eh ||= @stream.tty? # rubocop:disable Naming/MemoizedInstanceVariableName
       end
 
       # @see IO#isatty
@@ -81,6 +81,11 @@ module Nanoc
         end
       end
 
+      # @see IO#printf
+      def printf(*args)
+        @stream.printf(*args)
+      end
+
       # @see IO#puts
       def puts(*str)
         _nanoc_swallow_broken_pipe_errors_while do
@@ -101,6 +106,11 @@ module Nanoc
       # @see IO#close
       def close
         @stream.close
+      end
+
+      # @see IO#closed?
+      def closed?
+        @stream.closed?
       end
 
       # @see File#exist?

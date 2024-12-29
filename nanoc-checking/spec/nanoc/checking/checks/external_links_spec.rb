@@ -1,8 +1,8 @@
 # frozen_string_literal: true
 
-describe ::Nanoc::Checking::Checks::ExternalLinks do
+describe Nanoc::Checking::Checks::ExternalLinks do
   let(:check) do
-    Nanoc::Checking::Checks::ExternalLinks.create(site).tap do |c|
+    described_class.create(site).tap do |c|
       def c.request_url_once(_url)
         Net::HTTPResponse.new('1.1', '200', 'okay')
       end
@@ -11,8 +11,8 @@ describe ::Nanoc::Checking::Checks::ExternalLinks do
 
   let(:site) do
     Nanoc::Core::Site.new(
-      config: config,
-      code_snippets: code_snippets,
+      config:,
+      code_snippets:,
       data_source: Nanoc::Core::InMemoryDataSource.new(items, layouts),
     )
   end
@@ -21,6 +21,13 @@ describe ::Nanoc::Checking::Checks::ExternalLinks do
   let(:code_snippets) { [] }
   let(:items)         { Nanoc::Core::ItemCollection.new(config, []) }
   let(:layouts)       { Nanoc::Core::LayoutCollection.new(config, []) }
+
+  around do |ex|
+    FileUtils.mkdir('site with spaces')
+    Dir.chdir('site with spaces') do
+      ex.run
+    end
+  end
 
   before do
     FileUtils.mkdir_p('output')
@@ -33,7 +40,7 @@ describe ::Nanoc::Checking::Checks::ExternalLinks do
     end
 
     let(:check) do
-      Nanoc::Checking::Checks::ExternalLinks.create(site).tap do |c|
+      described_class.create(site).tap do |c|
         def c.request_url_once(_url)
           Net::HTTPResponse.new('1.1', '200', 'okay')
         end
@@ -52,7 +59,7 @@ describe ::Nanoc::Checking::Checks::ExternalLinks do
     end
 
     let(:check) do
-      Nanoc::Checking::Checks::ExternalLinks.create(site).tap do |c|
+      described_class.create(site).tap do |c|
         def c.request_url_once(_url)
           Net::HTTPResponse.new('1.1', '404', 'okay')
         end
@@ -72,7 +79,7 @@ describe ::Nanoc::Checking::Checks::ExternalLinks do
     end
 
     let(:check) do
-      Nanoc::Checking::Checks::ExternalLinks.create(site).tap do |c|
+      described_class.create(site).tap do |c|
         # rubocop:disable RSpec/InstanceVariable
         def c.request_url_once(_url)
           @enum ||= Enumerator.new do |y|
@@ -100,7 +107,7 @@ describe ::Nanoc::Checking::Checks::ExternalLinks do
     end
 
     let(:check) do
-      Nanoc::Checking::Checks::ExternalLinks.create(site).tap do |c|
+      described_class.create(site).tap do |c|
         # rubocop:disable RSpec/InstanceVariable
         def c.request_url_once(_url)
           @enum ||= Enumerator.new do |y|
@@ -123,14 +130,11 @@ describe ::Nanoc::Checking::Checks::ExternalLinks do
   context 'invalid URL component' do
     before do
       skip 'Known failure on Windows' if Nanoc::Core.on_windows?
+      File.write('output/hi.html', '<a href="mailto:lol">stuff</a>')
     end
 
     let(:check) do
-      Nanoc::Checking::Checks::ExternalLinks.create(site)
-    end
-
-    before do
-      File.write('output/hi.html', '<a href="mailto:lol">stuff</a>')
+      described_class.create(site)
     end
 
     it 'has issues' do
@@ -138,6 +142,21 @@ describe ::Nanoc::Checking::Checks::ExternalLinks do
       expect(check.issues.size).to eq(1)
       expect(check.issues.first.description)
         .to eq('broken reference to <mailto:lol>: invalid URI')
+    end
+  end
+
+  context 'javascript URL' do
+    before do
+      File.write('output/hi.html', %[<a href="javascript:window.scrollTo({top:0,behavior: 'smooth'})">scroll to top</a>])
+    end
+
+    let(:check) do
+      described_class.create(site)
+    end
+
+    it 'has no issues' do
+      check.run
+      expect(check.issues.size).to eq(0)
     end
   end
 
@@ -149,7 +168,7 @@ describe ::Nanoc::Checking::Checks::ExternalLinks do
     end
 
     let(:check) do
-      Nanoc::Checking::Checks::ExternalLinks.create(site)
+      described_class.create(site)
     end
 
     before do
@@ -178,7 +197,7 @@ describe ::Nanoc::Checking::Checks::ExternalLinks do
     end
 
     let(:check) do
-      Nanoc::Checking::Checks::ExternalLinks.create(site)
+      described_class.create(site)
     end
 
     before do

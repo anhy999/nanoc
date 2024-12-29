@@ -4,7 +4,7 @@ module Nanoc
   module Core
     # @api private
     class CompilerLoader
-      def load(site, action_provider: nil)
+      def load(site, focus: nil, action_provider: nil)
         action_sequence_store = Nanoc::Core::ActionSequenceStore.new(config: site.config)
 
         dependency_store =
@@ -13,7 +13,7 @@ module Nanoc
         objects = site.items.to_a + site.layouts.to_a + site.code_snippets + [site.config]
 
         checksum_store =
-          Nanoc::Core::ChecksumStore.new(config: site.config, objects: objects)
+          Nanoc::Core::ChecksumStore.new(config: site.config, objects:)
 
         action_provider ||= Nanoc::Core::ActionProvider.named(site.config.action_provider).for(site)
 
@@ -24,12 +24,13 @@ module Nanoc
           compiled_content_cache_class.new(config: site.config)
 
         params = {
-          compiled_content_cache: compiled_content_cache,
-          checksum_store: checksum_store,
-          action_sequence_store: action_sequence_store,
-          dependency_store: dependency_store,
-          action_provider: action_provider,
-          outdatedness_store: outdatedness_store,
+          compiled_content_cache:,
+          checksum_store:,
+          action_sequence_store:,
+          dependency_store:,
+          action_provider:,
+          outdatedness_store:,
+          focus:,
         }
 
         Nanoc::Core::Compiler.new(site, **params)

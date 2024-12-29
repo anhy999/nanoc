@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
 module Nanoc::Helpers
-  # @see https://nanoc.ws/doc/reference/helpers/#breadcrumbs
+  # @see https://nanoc.app/doc/reference/helpers/#breadcrumbs
   module Breadcrumbs
     class AmbiguousAncestorError < ::Nanoc::Core::Error
       def initialize(pattern, items)
@@ -33,12 +33,12 @@ module Nanoc::Helpers
 
       # e.g. unfold(10.class, &:superclass)
       # => [Integer, Numeric, Object, BasicObject]
-      def self.unfold(obj, &blk)
+      def self.unfold(obj, &)
         acc = [obj]
 
         res = yield(obj)
         if res
-          acc + unfold(res, &blk)
+          acc + unfold(res, &)
         else
           acc
         end

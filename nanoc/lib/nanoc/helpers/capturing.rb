@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
 module Nanoc::Helpers
-  # @see https://nanoc.ws/doc/reference/helpers/#capturing
+  # @see https://nanoc.app/doc/reference/helpers/#capturing
   module Capturing
     # @api private
     class SetContent
@@ -13,16 +13,16 @@ module Nanoc::Helpers
         @item = item
       end
 
-      def run(&block)
+      def run(&)
         existing_behavior = @params.fetch(:existing, :error)
 
         # Capture
-        content_string = capture(&block)
+        content_string = capture(&)
 
         # Get existing contents and prep for store
         compiled_content_store = @item._context.compiled_content_store
         rep = @item.reps[:default]._unwrap
-        capture_name = "__capture_#{@name}".to_sym
+        capture_name = :"__capture_#{@name}"
         old_content_string =
           case existing_behavior
           when :overwrite
@@ -74,8 +74,8 @@ module Nanoc::Helpers
         end
 
         compiled_content_store = @config._context.compiled_content_store
-        content = compiled_content_store.get(rep, "__capture_#{@name}".to_sym)
-        content ? content.string : nil
+        content = compiled_content_store.get(rep, :"__capture_#{@name}")
+        content&.string
       end
     end
 
@@ -102,7 +102,7 @@ module Nanoc::Helpers
     # @overload content_for(item, name)
     #   @param [Symbol, String] name
     #   @return [String]
-    def content_for(*args, &block)
+    def content_for(*args, &)
       if block_given? # Set content
         name = args[0]
         params =
@@ -116,7 +116,7 @@ module Nanoc::Helpers
               "of the capture, and optionally params) but got #{args.size} instead"
           end
 
-        SetContent.new(name, params, @item).run(&block)
+        SetContent.new(name, params, @item).run(&)
       elsif args.size > 1 && (args.first.is_a?(Symbol) || args.first.is_a?(String)) # Set content
         name = args[0]
         content = args.last
@@ -155,7 +155,7 @@ module Nanoc::Helpers
       yield
 
       # Get new piece of erbout
-      erbout_addition = erbout[erbout_length..-1]
+      erbout_addition = erbout[erbout_length..]
 
       # Remove addition
       erbout[erbout_length..-1] = +''

@@ -65,17 +65,17 @@ module Nanoc
 
       # @api private
       def self.reset_caches
-        @enabled_features = nil
+        @_enabled_features = nil
       end
 
       # @api private
       def self.enabled_features
-        @enabled_features ||= Set.new(ENV.fetch('NANOC_FEATURES', '').split(','))
+        @_enabled_features ||= Set.new(ENV.fetch('NANOC_FEATURES', '').split(','))
       end
 
       # @api private
       def self.repo
-        @repo ||= {}
+        @_repo ||= {}
       end
 
       # @return [Enumerable<String>] Names of features that still exist, but
@@ -84,11 +84,11 @@ module Nanoc
       def self.all_outdated
         repo.keys.reject do |name|
           version = repo[name]
-          Nanoc::VERSION.start_with?(version)
+          Nanoc::Core::VERSION.start_with?(version)
         end
       end
     end
   end
 end
 
-Nanoc::Core::Feature.define('where', version: '4.12')
+Nanoc::Core::Feature.define('where', version: '4.13')

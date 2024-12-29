@@ -10,11 +10,11 @@ module Nanoc
       class MixedContent < ::Nanoc::Checking::Check
         identifier :mixed_content
 
-        PROTOCOL_PATTERN = /^(\w+):\/\//.freeze
+        PROTOCOL_PATTERN = /^(\w+):\/\//
 
         def run
           filenames = output_html_filenames
-          resource_uris_with_filenames = ::Nanoc::Extra::LinkCollector.new(filenames).filenames_per_resource_uri
+          resource_uris_with_filenames = ::Nanoc::Checking::LinkCollector.new(filenames).filenames_per_resource_uri
 
           resource_uris_with_filenames.each_pair do |uri, fns|
             next unless guaranteed_insecure?(uri)

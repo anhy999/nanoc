@@ -80,8 +80,8 @@ module Nanoc
         )
       end
 
-      contract C_OBJ, Hamster::Set => C::Bool
-      def outdated_due_to_dependencies?(obj, processed = Hamster::Set.new)
+      contract C_OBJ, Immutable::Set => C::Bool
+      def outdated_due_to_dependencies?(obj, processed = Immutable::Set.new)
         # Convert from rep to item if necessary
         obj = obj.item if obj.is_a?(Nanoc::Core::ItemRep)
 
@@ -149,8 +149,7 @@ module Nanoc
           when Enumerable
             # If the `raw_content` dependency prop is a collection, then this
             # is a dependency on specific objects, given by the patterns.
-            patterns = raw_content_prop.map { |r| Nanoc::Core::Pattern.from(r) }
-            patterns.flat_map { |pat| objects.select { |obj| pat.match?(obj.identifier) } }
+            raw_content_prop.flat_map { |pat| objects.find_all(pat) }
           else
             raise(
               Nanoc::Core::Errors::InternalInconsistency,
@@ -169,7 +168,7 @@ module Nanoc
         # outdatedness.
         matching_objects.any? do |obj|
           status = basic_outdatedness_statuses.fetch(obj)
-          status.reasons.any? { |r| Nanoc::Core::OutdatednessReasons::DocumentAdded == r }
+          status.reasons.any? { |r| r == Nanoc::Core::OutdatednessReasons::DocumentAdded }
         end
       end
 

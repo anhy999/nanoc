@@ -1,6 +1,5 @@
 # frozen_string_literal: true
 
-# rubocop:disable RSpec/MultipleMemoizedHelpers
 describe Nanoc::Core::OutdatednessChecker do
   Class.new(Nanoc::Core::Filter) do
     identifier :always_outdated_3zh5qfqlqysghkd5ipek8glxzrljrylr
@@ -81,13 +80,13 @@ describe Nanoc::Core::OutdatednessChecker do
 
   let(:outdatedness_checker) do
     described_class.new(
-      site: site,
-      checksum_store: checksum_store,
+      site:,
+      checksum_store:,
       checksums: checksums_after,
-      dependency_store: dependency_store,
-      action_sequence_store: action_sequence_store,
+      dependency_store:,
+      action_sequence_store:,
       action_sequences: action_sequences_after,
-      reps: reps,
+      reps:,
     )
   end
 
@@ -202,9 +201,7 @@ describe Nanoc::Core::OutdatednessChecker do
     let(:item_home_rep_after)      { Nanoc::Core::ItemRep.new(item_home_after, :default) }
 
     it 'marks home item as outdated' do
-      expect(outdatedness_checker.outdatedness_reasons_for(item_home_after)).to match_array([
-        Nanoc::Core::OutdatednessReasons::ContentModified,
-      ])
+      expect(outdatedness_checker.outdatedness_reasons_for(item_home_after)).to contain_exactly(Nanoc::Core::OutdatednessReasons::ContentModified)
     end
 
     it 'marks other items as NOT outdated' do
@@ -233,15 +230,11 @@ describe Nanoc::Core::OutdatednessChecker do
       end
 
       it 'marks article item as outdated' do
-        expect(outdatedness_checker.outdatedness_reasons_for(item_article_a_after)).to match_array([
-          Nanoc::Core::OutdatednessReasons::ContentModified,
-        ])
+        expect(outdatedness_checker.outdatedness_reasons_for(item_article_a_after)).to contain_exactly(Nanoc::Core::OutdatednessReasons::ContentModified)
       end
 
       it 'marks articles item as outdated' do
-        expect(outdatedness_checker.outdatedness_reasons_for(item_articles_after)).to match_array([
-          Nanoc::Core::OutdatednessReasons::DependenciesOutdated,
-        ])
+        expect(outdatedness_checker.outdatedness_reasons_for(item_articles_after)).to contain_exactly(Nanoc::Core::OutdatednessReasons::DependenciesOutdated)
       end
 
       it 'marks other items as NOT outdated' do
@@ -265,9 +258,7 @@ describe Nanoc::Core::OutdatednessChecker do
       end
 
       it 'marks article item as outdated' do
-        expect(outdatedness_checker.outdatedness_reasons_for(item_article_a_after)).to match_array([
-          Nanoc::Core::OutdatednessReasons::ContentModified,
-        ])
+        expect(outdatedness_checker.outdatedness_reasons_for(item_article_a_after)).to contain_exactly(Nanoc::Core::OutdatednessReasons::ContentModified)
       end
 
       it 'marks other items as NOT outdated' do
@@ -292,15 +283,11 @@ describe Nanoc::Core::OutdatednessChecker do
       end
 
       it 'marks article item as outdated' do
-        expect(outdatedness_checker.outdatedness_reasons_for(item_article_a_after)).to match_array([
-          Nanoc::Core::OutdatednessReasons::ContentModified,
-        ])
+        expect(outdatedness_checker.outdatedness_reasons_for(item_article_a_after)).to contain_exactly(Nanoc::Core::OutdatednessReasons::ContentModified)
       end
 
       it 'marks articles item as outdated' do
-        expect(outdatedness_checker.outdatedness_reasons_for(item_articles_after)).to match_array([
-          Nanoc::Core::OutdatednessReasons::DependenciesOutdated,
-        ])
+        expect(outdatedness_checker.outdatedness_reasons_for(item_articles_after)).to contain_exactly(Nanoc::Core::OutdatednessReasons::DependenciesOutdated)
       end
 
       it 'marks other items as NOT outdated' do
@@ -324,9 +311,7 @@ describe Nanoc::Core::OutdatednessChecker do
       end
 
       it 'marks article item as outdated' do
-        expect(outdatedness_checker.outdatedness_reasons_for(item_article_a_after)).to match_array([
-          Nanoc::Core::OutdatednessReasons::ContentModified,
-        ])
+        expect(outdatedness_checker.outdatedness_reasons_for(item_article_a_after)).to contain_exactly(Nanoc::Core::OutdatednessReasons::ContentModified)
       end
 
       it 'marks other items as NOT outdated' do
@@ -356,9 +341,7 @@ describe Nanoc::Core::OutdatednessChecker do
       end
 
       it 'marks article item as outdated' do
-        expect(outdatedness_checker.outdatedness_reasons_for(item_article_a_after)).to match_array([
-          Nanoc::Core::OutdatednessReasons::AttributesModified,
-        ])
+        expect(outdatedness_checker.outdatedness_reasons_for(item_article_a_after)).to contain_exactly(Nanoc::Core::OutdatednessReasons::AttributesModified)
       end
 
       it 'marks other items as NOT outdated' do
@@ -383,15 +366,11 @@ describe Nanoc::Core::OutdatednessChecker do
       end
 
       it 'marks article item as outdated' do
-        expect(outdatedness_checker.outdatedness_reasons_for(item_article_a_after)).to match_array([
-          Nanoc::Core::OutdatednessReasons::AttributesModified,
-        ])
+        expect(outdatedness_checker.outdatedness_reasons_for(item_article_a_after)).to contain_exactly(Nanoc::Core::OutdatednessReasons::AttributesModified)
       end
 
       it 'marks articles item as outdated' do
-        expect(outdatedness_checker.outdatedness_reasons_for(item_articles_after)).to match_array([
-          Nanoc::Core::OutdatednessReasons::DependenciesOutdated,
-        ])
+        expect(outdatedness_checker.outdatedness_reasons_for(item_articles_after)).to contain_exactly(Nanoc::Core::OutdatednessReasons::DependenciesOutdated)
       end
 
       it 'marks other items as NOT outdated' do
@@ -415,15 +394,11 @@ describe Nanoc::Core::OutdatednessChecker do
       end
 
       it 'marks article item as outdated' do
-        expect(outdatedness_checker.outdatedness_reasons_for(item_article_a_after)).to match_array([
-          Nanoc::Core::OutdatednessReasons::AttributesModified,
-        ])
+        expect(outdatedness_checker.outdatedness_reasons_for(item_article_a_after)).to contain_exactly(Nanoc::Core::OutdatednessReasons::AttributesModified)
       end
 
       it 'marks articles item as outdated' do
-        expect(outdatedness_checker.outdatedness_reasons_for(item_articles_after)).to match_array([
-          Nanoc::Core::OutdatednessReasons::DependenciesOutdated,
-        ])
+        expect(outdatedness_checker.outdatedness_reasons_for(item_articles_after)).to contain_exactly(Nanoc::Core::OutdatednessReasons::DependenciesOutdated)
       end
 
       it 'marks other items as NOT outdated' do
@@ -447,9 +422,7 @@ describe Nanoc::Core::OutdatednessChecker do
       end
 
       it 'marks article item as outdated' do
-        expect(outdatedness_checker.outdatedness_reasons_for(item_article_a_after)).to match_array([
-          Nanoc::Core::OutdatednessReasons::AttributesModified,
-        ])
+        expect(outdatedness_checker.outdatedness_reasons_for(item_article_a_after)).to contain_exactly(Nanoc::Core::OutdatednessReasons::AttributesModified)
       end
 
       it 'marks other items as NOT outdated' do
@@ -474,15 +447,11 @@ describe Nanoc::Core::OutdatednessChecker do
       end
 
       it 'marks article item as outdated' do
-        expect(outdatedness_checker.outdatedness_reasons_for(item_article_a_after)).to match_array([
-          Nanoc::Core::OutdatednessReasons::AttributesModified,
-        ])
+        expect(outdatedness_checker.outdatedness_reasons_for(item_article_a_after)).to contain_exactly(Nanoc::Core::OutdatednessReasons::AttributesModified)
       end
 
       it 'marks articles item as outdated' do
-        expect(outdatedness_checker.outdatedness_reasons_for(item_articles_after)).to match_array([
-          Nanoc::Core::OutdatednessReasons::DependenciesOutdated,
-        ])
+        expect(outdatedness_checker.outdatedness_reasons_for(item_articles_after)).to contain_exactly(Nanoc::Core::OutdatednessReasons::DependenciesOutdated)
       end
 
       it 'marks other items as NOT outdated' do
@@ -506,9 +475,7 @@ describe Nanoc::Core::OutdatednessChecker do
       end
 
       it 'marks article item as outdated' do
-        expect(outdatedness_checker.outdatedness_reasons_for(item_article_a_after)).to match_array([
-          Nanoc::Core::OutdatednessReasons::AttributesModified,
-        ])
+        expect(outdatedness_checker.outdatedness_reasons_for(item_article_a_after)).to contain_exactly(Nanoc::Core::OutdatednessReasons::AttributesModified)
       end
 
       it 'marks other items as NOT outdated' do
@@ -535,9 +502,7 @@ describe Nanoc::Core::OutdatednessChecker do
       end
 
       it 'marks articles item as outdated' do
-        expect(outdatedness_checker.outdatedness_reasons_for(item_articles_after)).to match_array([
-          Nanoc::Core::OutdatednessReasons::DependenciesOutdated,
-        ])
+        expect(outdatedness_checker.outdatedness_reasons_for(item_articles_after)).to contain_exactly(Nanoc::Core::OutdatednessReasons::DependenciesOutdated)
       end
 
       it 'marks other items as NOT outdated' do
@@ -621,15 +586,11 @@ describe Nanoc::Core::OutdatednessChecker do
       end
 
       it 'marks home item as outdated' do
-        expect(outdatedness_checker.outdatedness_reasons_for(item_home_after)).to match_array([
-          Nanoc::Core::OutdatednessReasons::DependenciesOutdated,
-        ])
+        expect(outdatedness_checker.outdatedness_reasons_for(item_home_after)).to contain_exactly(Nanoc::Core::OutdatednessReasons::DependenciesOutdated)
       end
 
       it 'marks articles item as outdated' do
-        expect(outdatedness_checker.outdatedness_reasons_for(item_articles_after)).to match_array([
-          Nanoc::Core::OutdatednessReasons::DependenciesOutdated,
-        ])
+        expect(outdatedness_checker.outdatedness_reasons_for(item_articles_after)).to contain_exactly(Nanoc::Core::OutdatednessReasons::DependenciesOutdated)
       end
 
       it 'marks other items as NOT outdated' do
@@ -675,9 +636,7 @@ describe Nanoc::Core::OutdatednessChecker do
       end
 
       it 'marks articles item as outdated' do
-        expect(outdatedness_checker.outdatedness_reasons_for(item_articles_after)).to match_array([
-          Nanoc::Core::OutdatednessReasons::DependenciesOutdated,
-        ])
+        expect(outdatedness_checker.outdatedness_reasons_for(item_articles_after)).to contain_exactly(Nanoc::Core::OutdatednessReasons::DependenciesOutdated)
       end
 
       it 'marks other items as NOT outdated' do
@@ -700,9 +659,7 @@ describe Nanoc::Core::OutdatednessChecker do
       end
 
       it 'marks articles item as outdated' do
-        expect(outdatedness_checker.outdatedness_reasons_for(item_articles_after)).to match_array([
-          Nanoc::Core::OutdatednessReasons::DependenciesOutdated,
-        ])
+        expect(outdatedness_checker.outdatedness_reasons_for(item_articles_after)).to contain_exactly(Nanoc::Core::OutdatednessReasons::DependenciesOutdated)
       end
 
       it 'marks other items as NOT outdated' do
@@ -760,9 +717,7 @@ describe Nanoc::Core::OutdatednessChecker do
       end
 
       it 'marks article item as outdated' do
-        expect(outdatedness_checker.outdatedness_reasons_for(item_article_a_after)).to match_array([
-          Nanoc::Core::OutdatednessReasons::RulesModified,
-        ])
+        expect(outdatedness_checker.outdatedness_reasons_for(item_article_a_after)).to contain_exactly(Nanoc::Core::OutdatednessReasons::RulesModified)
       end
 
       it 'marks other items as NOT outdated' do
@@ -787,9 +742,7 @@ describe Nanoc::Core::OutdatednessChecker do
       end
 
       it 'marks article item as outdated' do
-        expect(outdatedness_checker.outdatedness_reasons_for(item_article_a_after)).to match_array([
-          Nanoc::Core::OutdatednessReasons::RulesModified,
-        ])
+        expect(outdatedness_checker.outdatedness_reasons_for(item_article_a_after)).to contain_exactly(Nanoc::Core::OutdatednessReasons::RulesModified)
       end
 
       it 'marks other items as NOT outdated' do
@@ -814,15 +767,11 @@ describe Nanoc::Core::OutdatednessChecker do
       end
 
       it 'marks article item as outdated' do
-        expect(outdatedness_checker.outdatedness_reasons_for(item_article_a_after)).to match_array([
-          Nanoc::Core::OutdatednessReasons::RulesModified,
-        ])
+        expect(outdatedness_checker.outdatedness_reasons_for(item_article_a_after)).to contain_exactly(Nanoc::Core::OutdatednessReasons::RulesModified)
       end
 
       it 'marks articles item as outdated' do
-        expect(outdatedness_checker.outdatedness_reasons_for(item_articles_after)).to match_array([
-          Nanoc::Core::OutdatednessReasons::DependenciesOutdated,
-        ])
+        expect(outdatedness_checker.outdatedness_reasons_for(item_articles_after)).to contain_exactly(Nanoc::Core::OutdatednessReasons::DependenciesOutdated)
       end
 
       it 'marks other items as NOT outdated' do
@@ -846,9 +795,7 @@ describe Nanoc::Core::OutdatednessChecker do
       end
 
       it 'marks article item as outdated' do
-        expect(outdatedness_checker.outdatedness_reasons_for(item_article_a_after)).to match_array([
-          Nanoc::Core::OutdatednessReasons::RulesModified,
-        ])
+        expect(outdatedness_checker.outdatedness_reasons_for(item_article_a_after)).to contain_exactly(Nanoc::Core::OutdatednessReasons::RulesModified)
       end
 
       it 'marks articles item as outdated' do
@@ -856,9 +803,7 @@ describe Nanoc::Core::OutdatednessChecker do
         # articles item should not be considered as outdated. This is because
         # the `RulesModified` outdatedness reason has the property `path: true`.
 
-        expect(outdatedness_checker.outdatedness_reasons_for(item_articles_after)).to match_array([
-          Nanoc::Core::OutdatednessReasons::DependenciesOutdated,
-        ])
+        expect(outdatedness_checker.outdatedness_reasons_for(item_articles_after)).to contain_exactly(Nanoc::Core::OutdatednessReasons::DependenciesOutdated)
       end
 
       it 'marks other items as NOT outdated' do
@@ -876,21 +821,11 @@ describe Nanoc::Core::OutdatednessChecker do
     let(:code_snippet_b_after) { Nanoc::Core::CodeSnippet.new('bbb UPDATED', 'lib/b.rb') }
 
     it 'marks all items as outdated' do
-      expect(outdatedness_checker.outdatedness_reasons_for(item_home_after)).to match_array([
-        Nanoc::Core::OutdatednessReasons::CodeSnippetsModified,
-      ])
-      expect(outdatedness_checker.outdatedness_reasons_for(item_articles_after)).to match_array([
-        Nanoc::Core::OutdatednessReasons::CodeSnippetsModified,
-      ])
-      expect(outdatedness_checker.outdatedness_reasons_for(item_article_a_after)).to match_array([
-        Nanoc::Core::OutdatednessReasons::CodeSnippetsModified,
-      ])
-      expect(outdatedness_checker.outdatedness_reasons_for(item_article_b_after)).to match_array([
-        Nanoc::Core::OutdatednessReasons::CodeSnippetsModified,
-      ])
-      expect(outdatedness_checker.outdatedness_reasons_for(item_article_c_after)).to match_array([
-        Nanoc::Core::OutdatednessReasons::CodeSnippetsModified,
-      ])
+      expect(outdatedness_checker.outdatedness_reasons_for(item_home_after)).to contain_exactly(Nanoc::Core::OutdatednessReasons::CodeSnippetsModified)
+      expect(outdatedness_checker.outdatedness_reasons_for(item_articles_after)).to contain_exactly(Nanoc::Core::OutdatednessReasons::CodeSnippetsModified)
+      expect(outdatedness_checker.outdatedness_reasons_for(item_article_a_after)).to contain_exactly(Nanoc::Core::OutdatednessReasons::CodeSnippetsModified)
+      expect(outdatedness_checker.outdatedness_reasons_for(item_article_b_after)).to contain_exactly(Nanoc::Core::OutdatednessReasons::CodeSnippetsModified)
+      expect(outdatedness_checker.outdatedness_reasons_for(item_article_c_after)).to contain_exactly(Nanoc::Core::OutdatednessReasons::CodeSnippetsModified)
     end
   end
 
@@ -905,9 +840,7 @@ describe Nanoc::Core::OutdatednessChecker do
     end
 
     it 'marks article item as outdated' do
-      expect(outdatedness_checker.outdatedness_reasons_for(item_article_a_after)).to match_array([
-        Nanoc::Core::OutdatednessReasons::UsesAlwaysOutdatedFilter,
-      ])
+      expect(outdatedness_checker.outdatedness_reasons_for(item_article_a_after)).to contain_exactly(Nanoc::Core::OutdatednessReasons::UsesAlwaysOutdatedFilter)
     end
 
     it 'marks other items as NOT outdated' do
@@ -926,9 +859,7 @@ describe Nanoc::Core::OutdatednessChecker do
     end
 
     it 'marks article item as outdated' do
-      expect(outdatedness_checker.outdatedness_reasons_for(item_article_a_after)).to match_array([
-        Nanoc::Core::OutdatednessReasons::NotWritten,
-      ])
+      expect(outdatedness_checker.outdatedness_reasons_for(item_article_a_after)).to contain_exactly(Nanoc::Core::OutdatednessReasons::NotWritten)
     end
 
     it 'marks other items as NOT outdated' do
@@ -964,9 +895,7 @@ describe Nanoc::Core::OutdatednessChecker do
       end
 
       it 'marks articles item as outdated' do
-        expect(outdatedness_checker.outdatedness_reasons_for(item_articles_after)).to match_array([
-          Nanoc::Core::OutdatednessReasons::DependenciesOutdated,
-        ])
+        expect(outdatedness_checker.outdatedness_reasons_for(item_articles_after)).to contain_exactly(Nanoc::Core::OutdatednessReasons::DependenciesOutdated)
       end
 
       it 'marks other items as NOT outdated' do
@@ -989,9 +918,7 @@ describe Nanoc::Core::OutdatednessChecker do
       end
 
       it 'marks articles item as outdated' do
-        expect(outdatedness_checker.outdatedness_reasons_for(item_articles_after)).to match_array([
-          Nanoc::Core::OutdatednessReasons::DependenciesOutdated,
-        ])
+        expect(outdatedness_checker.outdatedness_reasons_for(item_articles_after)).to contain_exactly(Nanoc::Core::OutdatednessReasons::DependenciesOutdated)
       end
 
       it 'marks other items as NOT outdated' do
@@ -1099,9 +1026,7 @@ describe Nanoc::Core::OutdatednessChecker do
       end
 
       it 'marks articles item as outdated' do
-        expect(outdatedness_checker.outdatedness_reasons_for(item_articles_after)).to match_array([
-          Nanoc::Core::OutdatednessReasons::DependenciesOutdated,
-        ])
+        expect(outdatedness_checker.outdatedness_reasons_for(item_articles_after)).to contain_exactly(Nanoc::Core::OutdatednessReasons::DependenciesOutdated)
       end
 
       it 'marks new item as outdated' do
@@ -1174,9 +1099,7 @@ describe Nanoc::Core::OutdatednessChecker do
       end
 
       it 'marks articles item as outdated' do
-        expect(outdatedness_checker.outdatedness_reasons_for(item_articles_after)).to match_array([
-          Nanoc::Core::OutdatednessReasons::DependenciesOutdated,
-        ])
+        expect(outdatedness_checker.outdatedness_reasons_for(item_articles_after)).to contain_exactly(Nanoc::Core::OutdatednessReasons::DependenciesOutdated)
       end
 
       it 'marks new item as outdated' do
@@ -1214,9 +1137,7 @@ describe Nanoc::Core::OutdatednessChecker do
       end
 
       it 'marks articles item as outdated' do
-        expect(outdatedness_checker.outdatedness_reasons_for(item_articles_after)).to match_array([
-          Nanoc::Core::OutdatednessReasons::DependenciesOutdated,
-        ])
+        expect(outdatedness_checker.outdatedness_reasons_for(item_articles_after)).to contain_exactly(Nanoc::Core::OutdatednessReasons::DependenciesOutdated)
       end
 
       it 'marks new item as outdated' do
@@ -1254,9 +1175,7 @@ describe Nanoc::Core::OutdatednessChecker do
       end
 
       it 'marks articles item as outdated' do
-        expect(outdatedness_checker.outdatedness_reasons_for(item_articles_after)).to match_array([
-          Nanoc::Core::OutdatednessReasons::DependenciesOutdated,
-        ])
+        expect(outdatedness_checker.outdatedness_reasons_for(item_articles_after)).to contain_exactly(Nanoc::Core::OutdatednessReasons::DependenciesOutdated)
       end
 
       it 'marks new item as outdated' do
@@ -1333,9 +1252,7 @@ describe Nanoc::Core::OutdatednessChecker do
       end
 
       it 'marks articles item as outdated' do
-        expect(outdatedness_checker.outdatedness_reasons_for(item_articles_after)).to match_array([
-          Nanoc::Core::OutdatednessReasons::DependenciesOutdated,
-        ])
+        expect(outdatedness_checker.outdatedness_reasons_for(item_articles_after)).to contain_exactly(Nanoc::Core::OutdatednessReasons::DependenciesOutdated)
       end
 
       it 'marks other items as NOT outdated' do
@@ -1390,9 +1307,7 @@ describe Nanoc::Core::OutdatednessChecker do
       end
 
       it 'marks articles item as outdated' do
-        expect(outdatedness_checker.outdatedness_reasons_for(item_articles_after)).to match_array([
-          Nanoc::Core::OutdatednessReasons::DependenciesOutdated,
-        ])
+        expect(outdatedness_checker.outdatedness_reasons_for(item_articles_after)).to contain_exactly(Nanoc::Core::OutdatednessReasons::DependenciesOutdated)
       end
 
       it 'marks other items as NOT outdated' do
@@ -1421,9 +1336,7 @@ describe Nanoc::Core::OutdatednessChecker do
       end
 
       it 'marks articles item as outdated' do
-        expect(outdatedness_checker.outdatedness_reasons_for(item_articles_after)).to match_array([
-          Nanoc::Core::OutdatednessReasons::DependenciesOutdated,
-        ])
+        expect(outdatedness_checker.outdatedness_reasons_for(item_articles_after)).to contain_exactly(Nanoc::Core::OutdatednessReasons::DependenciesOutdated)
       end
 
       it 'marks other items as NOT outdated' do
@@ -1452,9 +1365,7 @@ describe Nanoc::Core::OutdatednessChecker do
       end
 
       it 'marks articles item as outdated' do
-        expect(outdatedness_checker.outdatedness_reasons_for(item_articles_after)).to match_array([
-          Nanoc::Core::OutdatednessReasons::DependenciesOutdated,
-        ])
+        expect(outdatedness_checker.outdatedness_reasons_for(item_articles_after)).to contain_exactly(Nanoc::Core::OutdatednessReasons::DependenciesOutdated)
       end
 
       it 'marks other items as NOT outdated' do
@@ -1473,5 +1384,3 @@ describe Nanoc::Core::OutdatednessChecker do
   # Open questions:
   # - What if you do only do `@items.find_all('/articles/*').size`?
 end
-
-# rubocop:enable RSpec/MultipleMemoizedHelpers

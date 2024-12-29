@@ -1,12 +1,12 @@
 # frozen_string_literal: true
 
-describe ::Nanoc::Checking::Checks::Stale do
+describe Nanoc::Checking::Checks::Stale do
   let(:check) { described_class.create(site) }
 
   let(:site) do
     Nanoc::Core::Site.new(
-      config: config,
-      code_snippets: code_snippets,
+      config:,
+      code_snippets:,
       data_source: Nanoc::Core::InMemoryDataSource.new(items, layouts),
     )
   end

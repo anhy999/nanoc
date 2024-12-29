@@ -18,6 +18,14 @@ module Nanoc::CLI::Commands
       end
     end
 
+    DEFAULT_GEMFILE = <<~EOS unless defined? DEFAULT_GEMFILE
+      # frozen_string_literal: true
+
+      source 'https://rubygems.org'
+
+      gem 'nanoc', '~> #{Nanoc::CLI::VERSION.split('.').take(2).join('.')}'
+    EOS
+
     DEFAULT_CONFIG = <<~EOS unless defined? DEFAULT_CONFIG
       # A list of file extensions that Nanoc will consider to be textual rather than
       # binary. If an item with an extension not in this list is found,  the file
@@ -54,15 +62,13 @@ module Nanoc::CLI::Commands
       #  layout '/default.*'
       #
       #  if item.identifier =~ '**/index.*'
-      #    write item.identifier.to_s
+      #    write item.identifier.without_ext + '.html'
       #  else
       #    write item.identifier.without_ext + '/index.html'
       #  end
       #end
 
-      compile '/**/*' do
-        write item.identifier.to_s
-      end
+      passthrough '/**/*'
 
       layout '/**/*', :erb
     EOS
@@ -206,14 +212,14 @@ module Nanoc::CLI::Commands
           <div id="sidebar">
             <h2>Documentation</h2>
             <ul>
-              <li><a href="https://nanoc.ws/doc/">Documentation</a></li>
-              <li><a href="https://nanoc.ws/doc/tutorial/">Tutorial</a></li>
+              <li><a href="https://nanoc.app/doc/">Documentation</a></li>
+              <li><a href="https://nanoc.app/doc/tutorial/">Tutorial</a></li>
             </ul>
             <h2>Community</h2>
             <ul>
               <li><a href="http://groups.google.com/group/nanoc/">Discussion group</a></li>
               <li><a href="https://gitter.im/nanoc/nanoc">Gitter channel</a></li>
-              <li><a href="https://nanoc.ws/contributing/">Contributing</a></li>
+              <li><a href="https://nanoc.app/contributing/">Contributing</a></li>
             </ul>
           </div>
         </body>
@@ -240,6 +246,7 @@ module Nanoc::CLI::Commands
         FileUtils.mkdir_p('lib')
         FileUtils.mkdir_p('output')
 
+        write('Gemfile', DEFAULT_GEMFILE)
         write('nanoc.yaml', DEFAULT_CONFIG)
         write('Rules', DEFAULT_RULES)
         write('content/index.html', DEFAULT_ITEM)

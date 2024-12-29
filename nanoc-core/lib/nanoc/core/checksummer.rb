@@ -61,14 +61,19 @@ module Nanoc
 
         private
 
-        def update(obj, digest, visited = Hamster::Set.new)
-          digest.update(obj.class.to_s)
-
-          if visited.include?(obj)
-            digest.update('<recur>')
+        def update(obj, digest, visited = {})
+          num = visited[obj]
+          if num
+            # If there already is an entry for this object, refer to it by its number.
+            digest.update("@#{num}")
           else
-            digest.update('<')
-            behavior_for(obj).update(obj, digest) { |o| update(o, digest, visited.add(obj)) }
+            # This object isn’t known yet. Assign it a new number.
+            num = visited.length
+            visited[obj] = num
+
+            digest.update(obj.class.to_s)
+            digest.update("##{num}<")
+            behavior_for(obj).update(obj, digest) { |o| update(o, digest, visited) }
             digest.update('>')
           end
         end
@@ -276,11 +281,15 @@ module Nanoc
 
       class RescueUpdateBehavior < UpdateBehavior
         def self.update(obj, digest)
+          # rubocop:disable Style/ClassEqualityComparison
+          # This Rubocop rule is disabled because the class
+          # itself might not be loaded (yet).
           if obj.class.to_s == 'Sass::Importers::Filesystem'
             digest.update('root=')
             digest.update(obj.root)
             return
           end
+          # rubocop:enable Style/ClassEqualityComparison
 
           data =
             begin

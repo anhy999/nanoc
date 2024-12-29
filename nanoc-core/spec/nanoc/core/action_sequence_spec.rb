@@ -8,7 +8,7 @@ describe Nanoc::Core::ActionSequence do
 
   describe '#initialize' do
     context 'with actions' do
-      subject { described_class.new(actions: actions) }
+      subject { described_class.new(actions:) }
 
       let(:actions) do
         [
@@ -111,8 +111,7 @@ describe Nanoc::Core::ActionSequence do
     end
 
     example do
-      actions = []
-      action_sequence.each { |a| actions << a }
+      actions = action_sequence.map { _1 }
       expect(actions.size).to eq(3)
     end
   end
@@ -147,9 +146,9 @@ describe Nanoc::Core::ActionSequence do
     example do
       expect(subject).to eql(
         [
-          [:filter, :erb, 'PeWUm2PtXYtqeHJdTqnY7kkwAow='],
+          [:filter, :erb, 'B1gmzMdP+iEDgTz7SylLoB6yLNw='],
           [:snapshot, [:bar], true, ['/foo.md']],
-          [:layout, '/default.erb', '97LAe1pYTLKczxBsu+x4MmvqdkU='],
+          [:layout, '/default.erb', 'QQW0vu/3fP4Ihc5xhQKuPer3xUc='],
         ],
       )
     end

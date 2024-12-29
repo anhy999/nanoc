@@ -7,30 +7,47 @@ module Nanoc
         include Nanoc::Core::ContractsSupport
         include Nanoc::Core::Assertions::Mixin
 
-        def initialize(reps:, outdatedness_store:, dependency_store:, action_sequences:, compilation_context:, compiled_content_cache:)
+        def initialize(reps:, outdatedness_store:, dependency_store:, action_sequences:, compilation_context:, compiled_content_cache:, focus:)
           @reps = reps
           @outdatedness_store = outdatedness_store
           @dependency_store = dependency_store
           @action_sequences = action_sequences
           @compilation_context = compilation_context
           @compiled_content_cache = compiled_content_cache
+          @focus = focus
         end
 
         def run
           outdated_reps = @reps.select { |r| @outdatedness_store.include?(r) }
-          selector = Nanoc::Core::ItemRepSelector.new(outdated_reps)
-          run_phase_stack do |phase_stack|
-            selector.each do |rep|
-              handle_errors_while(rep) do
-                compile_rep(rep, phase_stack: phase_stack, is_outdated: @outdatedness_store.include?(rep))
+
+          # If a focus is specified, only compile reps that match this focus.
+          # (If no focus is specified, `@focus` will be `nil`, not an empty array.)
+          if @focus
+            focus_patterns = @focus.map { |f| Nanoc::Core::Pattern.from(f) }
+
+            # Find reps for which at least one focus pattern matches.
+            outdated_reps = outdated_reps.select do |irep|
+              focus_patterns.any? do |focus_pattern|
+                focus_pattern.match?(irep.item.identifier)
               end
             end
           end
 
-          assert Nanoc::Core::Assertions::AllItemRepsHaveCompiledContent.new(
-            compiled_content_cache: @compiled_content_cache,
-            item_reps: @reps,
-          )
+          selector = Nanoc::Core::ItemRepSelector.new(outdated_reps)
+          run_phase_stack do |phase_stack|
+            selector.each do |rep|
+              handle_errors_while(rep) do
+                compile_rep(rep, phase_stack:, is_outdated: @outdatedness_store.include?(rep))
+              end
+            end
+          end
+
+          unless @focus
+            assert Nanoc::Core::Assertions::AllItemRepsHaveCompiledContent.new(
+              compiled_content_cache: @compiled_content_cache,
+              item_reps: @reps,
+            )
+          end
         ensure
           @outdatedness_store.store
           @compiled_content_cache.prune(items: @reps.map(&:item).uniq)
@@ -46,7 +63,7 @@ module Nanoc
         end
 
         def compile_rep(rep, phase_stack:, is_outdated:)
-          phase_stack.call(rep, is_outdated: is_outdated)
+          phase_stack.call(rep, is_outdated:)
         end
 
         def run_phase_stack

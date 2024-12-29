@@ -18,7 +18,7 @@ module Nanoc
         def run
           # TODO: de-duplicate this (duplicated in external links check)
           filenames = output_html_filenames
-          uris = ::Nanoc::Extra::LinkCollector.new(filenames, :internal).filenames_per_href
+          uris = ::Nanoc::Checking::LinkCollector.new(filenames, :internal).filenames_per_href
 
           uris.each_pair do |href, fns|
             fns.each do |filename|
@@ -43,7 +43,8 @@ module Nanoc
 
           output_dir = @config.output_dir
           output_dir += '/' unless output_dir.end_with?('/')
-          base_uri = URI("file://#{output_dir}")
+          # FIXME: escape is hacky
+          base_uri = URI("file://#{output_dir.gsub(' ', '%20')}")
           path = href.sub(/#{base_uri}/, '').sub(/file:\/{1,3}/, '')
 
           path = "/#{path}" unless path.start_with?('/')
@@ -89,7 +90,7 @@ module Nanoc
           # FIXME: do not depend on current working directory
           origin = File.absolute_path(origin)
 
-          relative_origin = origin[@config.output_dir.size..-1]
+          relative_origin = origin[@config.output_dir.size..]
           excludes = config.fetch(:exclude_origins, [])
           excludes.any? { |pattern| Regexp.new(pattern).match(relative_origin) }
         end

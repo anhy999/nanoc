@@ -5,7 +5,17 @@ module Nanoc
     class Compiler
       include Nanoc::Core::ContractsSupport
 
-      def initialize(site, compiled_content_cache:, checksum_store:, action_sequence_store:, action_provider:, dependency_store:, outdatedness_store:)
+      contract Nanoc::Core::Site => C::Any
+      def self.compile(site, focus: nil)
+        new_for(site, focus:).run_until_end
+      end
+
+      contract Nanoc::Core::Site => Nanoc::Core::Compiler
+      def self.new_for(site, focus: nil)
+        Nanoc::Core::CompilerLoader.new.load(site, focus:)
+      end
+
+      def initialize(site, compiled_content_cache:, checksum_store:, action_sequence_store:, action_provider:, dependency_store:, outdatedness_store:, focus:)
         @site = site
 
         # Needed because configuration is mutable :(
@@ -17,29 +27,20 @@ module Nanoc
         @dependency_store       = dependency_store
         @action_provider        = action_provider
         @outdatedness_store     = outdatedness_store
+        @focus                  = focus
 
         @compiled_content_store = Nanoc::Core::CompiledContentStore.new
       end
 
-      contract Nanoc::Core::Site => C::Any
-      def self.compile(site)
-        new_for(site).run_until_end
-      end
-
-      contract Nanoc::Core::Site => Nanoc::Core::Compiler
-      def self.new_for(site)
-        Nanoc::Core::CompilerLoader.new.load(site)
-      end
-
       def run_until_preprocessed
-        @_res_preprocessed ||= begin
+        @_run_until_preprocessed ||= begin
           preprocess_stage.call
           {}
         end
       end
 
       def run_until_reps_built
-        @_res_reps_built ||= begin
+        @_run_until_reps_built ||= begin
           prev = run_until_preprocessed
 
           res = build_reps_stage.call
@@ -52,7 +53,7 @@ module Nanoc
       end
 
       def run_until_precompiled
-        @_res_precompiled ||= begin
+        @_run_until_precompiled ||= begin
           prev = run_until_reps_built
           action_sequences = prev.fetch(:action_sequences)
           reps = prev.fetch(:reps)
@@ -60,17 +61,17 @@ module Nanoc
           load_stores_stage.call
           checksums = calculate_checksums_stage.call
           outdatedness_checker = create_outdatedness_checker(
-            checksums: checksums,
-            action_sequences: action_sequences,
-            reps: reps,
+            checksums:,
+            action_sequences:,
+            reps:,
           )
           outdated_items = determine_outdatedness_stage(outdatedness_checker, reps).call
 
           prev.merge(
-            checksums: checksums,
+            checksums:,
             dependency_store: @dependency_store,
-            outdatedness_checker: outdatedness_checker,
-            outdated_items: outdated_items,
+            outdatedness_checker:,
+            outdated_items:,
           )
         end
       end
@@ -95,7 +96,7 @@ module Nanoc
       def compilation_context(reps:)
         Nanoc::Core::CompilationContext.new(
           action_provider: @action_provider,
-          reps: reps,
+          reps:,
           site: @site,
           compiled_content_cache: @compiled_content_cache,
           compiled_content_store: @compiled_content_store,
@@ -110,9 +111,9 @@ module Nanoc
           checksum_store: @checksum_store,
           dependency_store: @dependency_store,
           action_sequence_store: @action_sequence_store,
-          action_sequences: action_sequences,
-          checksums: checksums,
-          reps: reps,
+          action_sequences:,
+          checksums:,
+          reps:,
         )
       end
 
@@ -135,7 +136,7 @@ module Nanoc
       def prune_stage(reps)
         @_prune_stage ||= ::Nanoc::Core::CompilationStages::Prune.new(
           config: @site.config,
-          reps: reps,
+          reps:,
         )
       end
 
@@ -160,30 +161,31 @@ module Nanoc
 
       def determine_outdatedness_stage(outdatedness_checker, reps)
         @_determine_outdatedness_stage ||= ::Nanoc::Core::CompilationStages::DetermineOutdatedness.new(
-          reps: reps,
-          outdatedness_checker: outdatedness_checker,
+          reps:,
+          outdatedness_checker:,
           outdatedness_store: @outdatedness_store,
         )
       end
 
       def store_pre_compilation_state_stage(action_sequences, reps)
         @_store_pre_compilation_state_stage ||= ::Nanoc::Core::CompilationStages::StorePreCompilationState.new(
-          reps: reps,
+          reps:,
           layouts: @site.layouts,
           checksum_store: @checksum_store,
           action_sequence_store: @action_sequence_store,
-          action_sequences: action_sequences,
+          action_sequences:,
         )
       end
 
       def compile_reps_stage(action_sequences, reps)
         @_compile_reps_stage ||= ::Nanoc::Core::CompilationStages::CompileReps.new(
-          reps: reps,
+          reps:,
           outdatedness_store: @outdatedness_store,
           dependency_store: @dependency_store,
-          action_sequences: action_sequences,
-          compilation_context: compilation_context(reps: reps),
+          action_sequences:,
+          compilation_context: compilation_context(reps:),
           compiled_content_cache: @compiled_content_cache,
+          focus: @focus,
         )
       end
 

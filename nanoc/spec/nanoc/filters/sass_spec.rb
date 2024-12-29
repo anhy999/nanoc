@@ -3,17 +3,17 @@
 describe Nanoc::Filters::SassCommon do
   context 'with item, items, config context' do
     subject(:sass_sourcemap) do
-      ::Nanoc::Filter.named(:sass_sourcemap).new(sass_sourcemap_params)
+      Nanoc::Filter.named(:sass_sourcemap).new(sass_sourcemap_params)
     end
 
-    let(:sass) { ::Nanoc::Filter.named(:sass).new(sass_params) }
+    let(:sass) { Nanoc::Filter.named(:sass).new(sass_params) }
 
     let(:sass_params) do
       {
         item: item_main_view,
         item_rep: item_main_default_rep_view,
         items: item_views,
-        config: config,
+        config:,
       }
     end
 
@@ -22,7 +22,7 @@ describe Nanoc::Filters::SassCommon do
         item: item_main_view,
         item_rep: item_main_sourcemap_rep_view,
         items: item_views,
-        config: config,
+        config:,
       }
     end
 
@@ -148,11 +148,11 @@ describe Nanoc::Filters::SassCommon do
 
     let(:view_context) do
       Nanoc::Core::ViewContextForCompilation.new(
-        reps: reps,
-        items: items,
-        dependency_tracker: dependency_tracker,
-        compilation_context: compilation_context,
-        compiled_content_store: compiled_content_store,
+        reps:,
+        items:,
+        dependency_tracker:,
+        compilation_context:,
+        compiled_content_store:,
       )
     end
 
@@ -174,11 +174,11 @@ describe Nanoc::Filters::SassCommon do
 
     let(:compilation_context) do
       Nanoc::Core::CompilationContext.new(
-        action_provider: action_provider,
-        reps: reps,
-        site: site,
-        compiled_content_cache: compiled_content_cache,
-        compiled_content_store: compiled_content_store,
+        action_provider:,
+        reps:,
+        site:,
+        compiled_content_cache:,
+        compiled_content_store:,
       )
     end
 
@@ -192,7 +192,7 @@ describe Nanoc::Filters::SassCommon do
       end.new
     end
 
-    let(:compiled_content_cache) { Nanoc::Core::CompiledContentCache.new(config: config) }
+    let(:compiled_content_cache) { Nanoc::Core::CompiledContentCache.new(config:) }
 
     let(:compiled_content_store) do
       Nanoc::Core::CompiledContentStore.new.tap do |repo|
@@ -206,7 +206,7 @@ describe Nanoc::Filters::SassCommon do
 
     let(:site) do
       Nanoc::Core::Site.new(
-        config: config,
+        config:,
         code_snippets: [],
         data_source: Nanoc::Core::InMemoryDataSource.new(items, layouts),
       )
@@ -266,7 +266,7 @@ describe Nanoc::Filters::SassCommon do
 
     it 'raises proper error on failure' do
       expect { sass.setup_and_run('$*#&!@($') }
-        .to raise_error(::Sass::SyntaxError, /Invalid variable/)
+        .to raise_error(Sass::SyntaxError, /Invalid variable/)
     end
 
     context 'importing a file for which an item exists' do
@@ -279,9 +279,9 @@ describe Nanoc::Filters::SassCommon do
 
       it 'cannot import by nested relative path' do
         expect { sass.setup_and_run('@import content/style/colors/blue') }
-          .to raise_error(::Sass::SyntaxError, /File to import not found/)
+          .to raise_error(Sass::SyntaxError, /File to import not found/)
         expect { sass.setup_and_run('@import content/style/colors/red') }
-          .to raise_error(::Sass::SyntaxError, /File to import not found/)
+          .to raise_error(Sass::SyntaxError, /File to import not found/)
       end
 
       it 'can import by relative path with extension' do
@@ -293,9 +293,9 @@ describe Nanoc::Filters::SassCommon do
 
       it 'cannot import by nested relative path with extension' do
         expect { sass.setup_and_run('@import content/style/colors/blue.sass') }
-          .to raise_error(::Sass::SyntaxError, /File to import not found/)
+          .to raise_error(Sass::SyntaxError, /File to import not found/)
         expect { sass.setup_and_run('@import content/style/colors/red.scss') }
-          .to raise_error(::Sass::SyntaxError, /File to import not found/)
+          .to raise_error(Sass::SyntaxError, /File to import not found/)
       end
 
       it 'can import SCSS partials by relative path' do
@@ -310,12 +310,12 @@ describe Nanoc::Filters::SassCommon do
 
       it 'cannot import anonymous SASS partials by relative path' do
         expect { sass.setup_and_run('@import anonymous-sass-partial') }
-          .to raise_error(::Sass::SyntaxError, /File to import not found/)
+          .to raise_error(Sass::SyntaxError, /File to import not found/)
       end
 
       it 'cannot import partials by nested relative path' do
         expect { sass.setup_and_run('@import content/style/_partial') }
-          .to raise_error(::Sass::SyntaxError, /File to import not found/)
+          .to raise_error(Sass::SyntaxError, /File to import not found/)
       end
 
       it 'can import partials by relative path with SCSS extension' do
@@ -330,22 +330,22 @@ describe Nanoc::Filters::SassCommon do
 
       it 'cannot import partials by relative path without extension' do
         expect { sass.setup_and_run('@import anonymous-sass-partial') }
-          .to raise_error(::Sass::SyntaxError, /File to import not found/)
+          .to raise_error(Sass::SyntaxError, /File to import not found/)
       end
 
       it 'cannot import partials by nested relative path with SCSS extension' do
         expect { sass.setup_and_run('@import content/style/partial.scss') }
-          .to raise_error(::Sass::SyntaxError, /File to import not found/)
+          .to raise_error(Sass::SyntaxError, /File to import not found/)
       end
 
       it 'cannot import partials by nested relative path with SASS extension' do
         expect { sass.setup_and_run('@import content/style/sass-partial.sass') }
-          .to raise_error(::Sass::SyntaxError, /File to import not found/)
+          .to raise_error(Sass::SyntaxError, /File to import not found/)
       end
 
       it 'cannot import partials by nested relative path without extension' do
         expect { sass.setup_and_run('@import content/style/anonymous-sass-partial') }
-          .to raise_error(::Sass::SyntaxError, /File to import not found/)
+          .to raise_error(Sass::SyntaxError, /File to import not found/)
       end
 
       it 'creates a dependency' do
@@ -372,7 +372,7 @@ describe Nanoc::Filters::SassCommon do
       context 'load_path not set' do
         it 'cannot import (using load paths) by relative path' do
           expect { sass.setup_and_run('@import external') }
-            .to raise_error(::Sass::SyntaxError, /File to import not found/)
+            .to raise_error(Sass::SyntaxError, /File to import not found/)
         end
 
         it 'can import (using importer) by relative path' do

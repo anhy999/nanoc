@@ -48,9 +48,6 @@ module Nanoc
     end
 
     class HelperContext
-      # @return [Nanoc::Core::DependencyTracker]
-      attr_reader :dependency_tracker
-
       attr_reader :erbout
 
       # @param [Module] mod The helper module to create a context for
@@ -63,7 +60,6 @@ module Nanoc
         @reps = Nanoc::Core::ItemRepRepo.new
         @items = Nanoc::Core::ItemCollection.new(@config)
         @layouts = Nanoc::Core::LayoutCollection.new(@config)
-        @dependency_tracker = Nanoc::Core::DependencyTracker.new(Object.new)
         @compiled_content_store = Nanoc::Core::CompiledContentStore.new
         @action_provider = new_action_provider
       end
@@ -119,11 +115,11 @@ module Nanoc
       end
 
       def item=(item)
-        @item = item ? item._unwrap : nil
+        @item = item&._unwrap
       end
 
       def item_rep=(item_rep)
-        @item_rep = item_rep ? item_rep._unwrap : nil
+        @item_rep = item_rep&._unwrap
       end
 
       # @return [Nanoc::Core::MutableConfigView]
@@ -163,6 +159,25 @@ module Nanoc
         view_context.compiled_content_store
       end
 
+      def assigns
+        {
+          config: Nanoc::Core::MutableConfigView.new(@config, view_context),
+          item_rep: @item_rep ? Nanoc::Core::CompilationItemRepView.new(@item_rep, view_context) : nil,
+          item: @item ? Nanoc::Core::CompilationItemView.new(@item, view_context) : nil,
+          items: Nanoc::Core::ItemCollectionWithRepsView.new(@items, view_context),
+          layouts: Nanoc::Core::LayoutCollectionView.new(@layouts, view_context),
+          _erbout: @erbout,
+        }
+      end
+
+      def dependency_store
+        @_dependency_store ||= Nanoc::Core::DependencyStore.new(@items, @layouts, @config)
+      end
+
+      def dependency_tracker
+        @_dependency_tracker ||= Nanoc::Core::DependencyTracker.new(dependency_store)
+      end
+
       private
 
       def view_context
@@ -170,7 +185,7 @@ module Nanoc
           Nanoc::Core::CompilationContext.new(
             action_provider: @action_provider,
             reps: @reps,
-            site: site,
+            site:,
             compiled_content_cache: Nanoc::Core::CompiledContentCache.new(config: @config),
             compiled_content_store: @compiled_content_store,
           )
@@ -178,8 +193,8 @@ module Nanoc
         Nanoc::Core::ViewContextForCompilation.new(
           reps: @reps,
           items: @items,
-          dependency_tracker: @dependency_tracker,
-          compilation_context: compilation_context,
+          dependency_tracker:,
+          compilation_context:,
           compiled_content_store: @compiled_content_store,
         )
       end
@@ -219,17 +234,6 @@ module Nanoc
             code_snippets: [],
             data_source: Nanoc::Core::InMemoryDataSource.new(@items, @layouts),
           )
-      end
-
-      def assigns
-        {
-          config: Nanoc::Core::MutableConfigView.new(@config, view_context),
-          item_rep: @item_rep ? Nanoc::Core::CompilationItemRepView.new(@item_rep, view_context) : nil,
-          item: @item ? Nanoc::Core::CompilationItemView.new(@item, view_context) : nil,
-          items: Nanoc::Core::ItemCollectionWithRepsView.new(@items, view_context),
-          layouts: Nanoc::Core::LayoutCollectionView.new(@layouts, view_context),
-          _erbout: @erbout,
-        }
       end
     end
 

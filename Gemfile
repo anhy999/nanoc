@@ -6,14 +6,24 @@ gemspec path: 'nanoc'
 gemspec path: 'nanoc-core'
 gemspec path: 'nanoc-cli'
 gemspec path: 'nanoc-checking'
+gemspec path: 'nanoc-dart-sass'
 gemspec path: 'nanoc-deploying'
 gemspec path: 'nanoc-external'
+gemspec path: 'nanoc-org-mode'
 gemspec path: 'nanoc-live'
 gemspec path: 'nanoc-spec'
+gemspec path: 'nanoc-tilt'
 gemspec path: 'guard-nanoc'
 
+group :release do
+  gem 'netrc', '~> 0.11.0'
+  gem 'octokit', '~> 9.2'
+end
+
 group :devel do
+  gem 'addressable', '~> 2.8'
   gem 'contracts', '~> 0.16'
+  gem 'debug', '~> 1.9'
   gem 'fuubar'
   gem 'guard-rake'
   gem 'json', '~> 2.1'
@@ -30,7 +40,7 @@ group :devel do
   gem 'rubocop-minitest'
   gem 'rubocop-rake'
   gem 'rubocop-rspec'
-  gem 'simplecov', '~> 0.21.2'
+  gem 'simplecov', '~> 0.22.0'
   gem 'timecop'
   gem 'tty-command', '~> 0.8'
   gem 'vcr'
@@ -68,17 +78,22 @@ group :plugins do
   gem 'pygments.rb', '~> 2.0', platforms: :ruby
   gem 'rack'
   gem 'rainpress'
-  gem 'rdiscount', '~> 2.2', platforms: :ruby
   gem 'redcarpet', '~> 3.4', platforms: :ruby
   gem 'RedCloth', platforms: :ruby
-  gem 'rouge', '~> 3.1'
+  gem 'rouge', '~> 4.1'
   gem 'ruby-handlebars'
   gem 'rubypants'
   gem 'sass'
-  gem 'slim', '~> 4.0'
+  gem 'slim', '~> 5.0'
   gem 'terser'
   gem 'typogruby'
   gem 'w3c_validators'
   gem 'wdm', '>= 0.1.0' if Gem.win_platform?
   gem 'yuicompressor'
+
+  # TODO: remove
+  # See https://github.com/davidfstr/rdiscount/issues/155
+  unless `clang --version`.match?(/clang version 16/)
+    gem 'rdiscount', '~> 2.2', platforms: :ruby
+  end
 end

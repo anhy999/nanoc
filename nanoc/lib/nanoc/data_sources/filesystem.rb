@@ -48,8 +48,6 @@ module Nanoc::DataSources
   #
   # @api private
   class Filesystem < Nanoc::DataSource
-    PERMITTED_YAML_CLASSES = Nanoc::Core::ConfigLoader::PERMITTED_YAML_CLASSES
-
     class AmbiguousMetadataAssociationError < ::Nanoc::Core::Error
       def initialize(content_filenames, meta_filename)
         super("There are multiple content files (#{content_filenames.sort.join(', ')}) that could match the file containing metadata (#{meta_filename}).")
@@ -94,9 +92,11 @@ module Nanoc::DataSources
       require 'listen'
 
       Nanoc::Core::ChangesStream.new do |cl|
-        if dir
+        full_dir = dir ? File.expand_path(dir) : nil
+
+        if full_dir && File.directory?(full_dir)
           listener =
-            Listen.to(File.expand_path(dir)) do |_modifieds, _addeds, _deleteds|
+            Listen.to(full_dir) do |_modifieds, _addeds, _deleteds|
               cl.unknown
             end
 
@@ -149,10 +149,10 @@ module Nanoc::DataSources
     end
 
     def read_proto_document(content_filename, meta_filename, klass)
-      is_binary = content_filename && !@site_config[:text_extensions].include?(File.extname(content_filename)[1..-1])
+      is_binary = content_filename && !@site_config[:text_extensions].include?(File.extname(content_filename)[1..])
 
       if is_binary && klass == Nanoc::Core::Item
-        meta = (meta_filename && YAML.safe_load_file(meta_filename, permitted_classes: PERMITTED_YAML_CLASSES)) || {}
+        meta = (meta_filename && Nanoc::Core::YamlLoader.load_file(meta_filename)) || {}
 
         ProtoDocument.new(is_binary: true, filename: content_filename, attributes: meta)
       elsif is_binary && klass == Nanoc::Core::Layout
@@ -248,9 +248,9 @@ module Nanoc::DataSources
     def extra_attributes_for(content_filename, meta_filename)
       {
         filename: content_filename,
-        content_filename: content_filename,
-        meta_filename: meta_filename,
-        extension: content_filename ? ext_of(content_filename)[1..-1] : nil,
+        content_filename:,
+        meta_filename:,
+        extension: content_filename ? ext_of(content_filename)[1..] : nil,
         mtime: mtime_of(content_filename, meta_filename),
       }
     end
@@ -261,9 +261,9 @@ module Nanoc::DataSources
 
     def identifier_for(content_filename, meta_filename, dir_name)
       if content_filename
-        identifier_for_filename(content_filename[dir_name.length..-1])
+        identifier_for_filename(content_filename[dir_name.length..])
       elsif meta_filename
-        identifier_for_filename(meta_filename[dir_name.length..-1])
+        identifier_for_filename(meta_filename[dir_name.length..])
       else
         raise 'meta_filename and content_filename are both nil'
       end
@@ -282,15 +282,11 @@ module Nanoc::DataSources
     def mtime_of(content_filename, meta_filename)
       meta_mtime = meta_filename ? File.stat(meta_filename).mtime : nil
       content_mtime = content_filename ? File.stat(content_filename).mtime : nil
-      if meta_mtime && content_mtime
-        meta_mtime > content_mtime ? meta_mtime : content_mtime
-      elsif meta_mtime
-        meta_mtime
-      elsif content_mtime
-        content_mtime
-      else
-        raise 'meta_mtime and content_mtime are both nil'
-      end
+
+      mtime = [meta_mtime, content_mtime].compact.max
+      raise 'meta_mtime and content_mtime are both nil' unless mtime
+
+      mtime
     end
 
     # e.g.
@@ -328,7 +324,7 @@ module Nanoc::DataSources
         all[basename][0] =
           meta_filenames[0] ? 'yaml' : nil
         all[basename][1] =
-          content_filenames.any? ? content_filenames.map { |fn| ext_of(fn)[1..-1] || '' } : [nil]
+          content_filenames.any? ? content_filenames.map { |fn| ext_of(fn)[1..] || '' } : [nil]
       end
 
       all
@@ -411,7 +407,7 @@ module Nanoc::DataSources
     end
 
     def parser
-      @parser ||= Parser.new(config: @config)
+      @_parser ||= Parser.new(config: @config)
     end
 
     def parse(content_filename, meta_filename)

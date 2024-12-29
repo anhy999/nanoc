@@ -142,9 +142,9 @@ describe Nanoc::Core::ItemRepSelector do
         expect { subject }.to raise_error(Nanoc::Core::Errors::DependencyCycle, <<~EOS)
           The site cannot be compiled because there is a dependency cycle:
 
-              (1) item /foo.md, rep :a, uses compiled content of
-              (2) item /foo.md, rep :b, uses compiled content of
-              (3) item /foo.md, rep :c, uses compiled content of (1)
+              (1) item /foo.md, rep :c, uses compiled content of
+              (2) item /foo.md, rep :a, uses compiled content of
+              (3) item /foo.md, rep :b, uses compiled content of (1)
         EOS
       end
     end
@@ -188,7 +188,7 @@ describe Nanoc::Core::ItemRepSelector do
 
       example do
         expect(successfully_yielded).to eq %i[b c d e a]
-        expect(tentatively_yielded).to eq %i[a b a c a d a e a]
+        expect(tentatively_yielded).to eq %i[a b c d e a]
       end
     end
 
@@ -217,8 +217,8 @@ describe Nanoc::Core::ItemRepSelector do
       end
 
       it 'picks prioritised roots' do
-        expect(successfully_yielded).to eq %i[d a e b c]
-        expect(tentatively_yielded).to eq %i[a d a b e b c]
+        expect(successfully_yielded).to eq %i[d e c b a]
+        expect(tentatively_yielded).to eq %i[a d b e c b a]
       end
     end
   end

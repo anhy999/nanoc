@@ -5,29 +5,32 @@ describe Nanoc::Core::CompilationStages::CompileReps do
     identifier :simple_erb_vcn3np2ayqmv6ayqp8su2crbusonmgwh
 
     def run(content, _params = {})
-      context = ::Nanoc::Core::Context.new(assigns)
+      context = Nanoc::Core::Context.new(assigns)
       ERB.new(content).result(context.get_binding)
     end
   end
 
   let(:stage) do
     described_class.new(
-      reps: reps,
-      outdatedness_store: outdatedness_store,
-      dependency_store: dependency_store,
-      action_sequences: action_sequences,
-      compilation_context: compilation_context,
-      compiled_content_cache: compiled_content_cache,
+      reps:,
+      outdatedness_store:,
+      dependency_store:,
+      action_sequences:,
+      compilation_context:,
+      compiled_content_cache:,
+      focus:,
     )
   end
 
+  let(:focus) { nil }
+
   let(:compilation_context) do
     Nanoc::Core::CompilationContext.new(
-      action_provider: action_provider,
-      reps: reps,
-      site: site,
-      compiled_content_cache: compiled_content_cache,
-      compiled_content_store: compiled_content_store,
+      action_provider:,
+      reps:,
+      site:,
+      compiled_content_cache:,
+      compiled_content_store:,
     )
   end
 
@@ -43,10 +46,10 @@ describe Nanoc::Core::CompilationStages::CompileReps do
 
   let(:action_sequences) { double(:action_sequences) }
   let(:reps) { Nanoc::Core::ItemRepRepo.new }
-  let(:compiled_content_cache) { Nanoc::Core::CompiledContentCache.new(config: config) }
+  let(:compiled_content_cache) { Nanoc::Core::CompiledContentCache.new(config:) }
   let(:compiled_content_store) { Nanoc::Core::CompiledContentStore.new }
 
-  let(:outdatedness_store) { Nanoc::Core::OutdatednessStore.new(config: config) }
+  let(:outdatedness_store) { Nanoc::Core::OutdatednessStore.new(config:) }
   let(:dependency_store) { Nanoc::Core::DependencyStore.new(items, layouts, config) }
 
   let(:rep) { Nanoc::Core::ItemRep.new(item, :default) }
@@ -57,8 +60,8 @@ describe Nanoc::Core::CompilationStages::CompileReps do
 
   let(:site) do
     Nanoc::Core::Site.new(
-      config: config,
-      code_snippets: code_snippets,
+      config:,
+      code_snippets:,
       data_source: Nanoc::Core::InMemoryDataSource.new(items, layouts),
     )
   end
@@ -84,7 +87,7 @@ describe Nanoc::Core::CompilationStages::CompileReps do
         Nanoc::Core::ProcessingActions::Snapshot.new([:last], []),
       ]
 
-    Nanoc::Core::ActionSequence.new(actions: actions)
+    Nanoc::Core::ActionSequence.new(actions:)
   end
 
   before do
@@ -124,21 +127,66 @@ describe Nanoc::Core::CompilationStages::CompileReps do
     end
 
     context 'rep in outdatedness store' do
-      before { outdatedness_store.add(rep) }
-
       before do
+        outdatedness_store.add(rep)
+
         # Needed for consistency
         compiled_content_cache[other_rep] = { last: Nanoc::Core::TextualContent.new('asdf') }
       end
 
-      it 'compiles individual reps' do
-        expect { subject }.to change { compiled_content_store.get(rep, :last) }
-          .from(nil)
-          .to(some_textual_content('3'))
+      context 'when focus is not specified' do
+        let(:focus) { nil }
+
+        it 'compiles individual reps' do
+          expect { subject }.to change { compiled_content_store.get(rep, :last) }
+            .from(nil)
+            .to(some_textual_content('3'))
+        end
+
+        it 'removes the item rep from the outdatedness store' do
+          expect { subject }.to change { outdatedness_store.include?(rep) }.from(true).to(false)
+        end
       end
 
-      it 'removes the item rep from the outdatedness store' do
-        expect { subject }.to change { outdatedness_store.include?(rep) }.from(true).to(false)
+      context 'when in focus with one entry' do
+        let(:focus) { ['/hi.*'] }
+
+        it 'compiles individual reps' do
+          expect { subject }.to change { compiled_content_store.get(rep, :last) }
+            .from(nil)
+            .to(some_textual_content('3'))
+        end
+
+        it 'removes the item rep from the outdatedness store' do
+          expect { subject }.to change { outdatedness_store.include?(rep) }.from(true).to(false)
+        end
+      end
+
+      context 'when in focus with multiple entries' do
+        let(:focus) { ['/hi.*', '/unrelated.*'] }
+
+        it 'compiles individual reps' do
+          expect { subject }.to change { compiled_content_store.get(rep, :last) }
+            .from(nil)
+            .to(some_textual_content('3'))
+        end
+
+        it 'removes the item rep from the outdatedness store' do
+          expect { subject }.to change { outdatedness_store.include?(rep) }.from(true).to(false)
+        end
+      end
+
+      context 'when not in focus' do
+        let(:focus) { ['/other.*'] }
+
+        it 'does not compile individual reps' do
+          expect { subject }.not_to change { compiled_content_store.get(rep, :last) }
+            .from(nil)
+        end
+
+        it 'does not remove the item rep from the outdatedness store' do
+          expect { subject }.not_to change { outdatedness_store.include?(rep) }.from(true)
+        end
       end
 
       context 'exception' do
@@ -157,7 +205,8 @@ describe Nanoc::Core::CompilationStages::CompileReps do
         it 'contains the right wrapped exception' do
           expect { subject }.to raise_error do |err|
             expect(err.unwrap).to be_a(SyntaxError)
-            expect(err.unwrap.message).to start_with('(erb):1: unterminated string meets end of file')
+            expect(err.unwrap.message).to start_with('(erb):1:')
+            expect(err.unwrap.message).to include('unterminated string meets end of file')
           end
         end
 

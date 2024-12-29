@@ -1,19 +1,20 @@
 # frozen_string_literal: true
 
 # Ruby stdlib
+require 'base64'
 require 'fiber'
 require 'find'
-require 'pstore'
 require 'singleton'
 require 'tmpdir'
 require 'yaml'
+require 'zlib'
 
 # External gems
 require 'concurrent-ruby'
 require 'json_schema'
 require 'ddmetrics'
 require 'ddplugin'
-require 'hamster'
+require 'immutable'
 require 'memo_wise'
 require 'slow_enumerator_tools'
 require 'tty-platform'
@@ -46,7 +47,7 @@ module Nanoc
     #
     # @api private
     def self.version_information
-      "Nanoc #{Nanoc::VERSION} © 2007–2022 Denis Defreyne.\n" \
+      "Nanoc #{Nanoc::Core::VERSION} © 2007–… Denis Defreyne.\n" \
       "Running #{RUBY_ENGINE} #{RUBY_VERSION} (#{RUBY_RELEASE_DATE}) on #{RUBY_PLATFORM} with RubyGems #{Gem::VERSION}.\n"
     end
 

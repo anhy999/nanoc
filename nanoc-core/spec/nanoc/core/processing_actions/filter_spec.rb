@@ -6,19 +6,19 @@ describe Nanoc::Core::ProcessingActions::Filter do
   describe '#serialize' do
     subject { action.serialize }
 
-    it { is_expected.to eql([:filter, :foo, 'sJYzLjHGo1e4ytuDfnOLkqrt9QE=']) }
+    it { is_expected.to eql([:filter, :foo, 'v+eiDx9FKFH7+UBdX93/FK7/pRM=']) }
   end
 
   describe '#to_s' do
     subject { action.to_s }
 
-    it { is_expected.to eql('filter :foo, {:awesome=>true}') }
+    it { is_expected.to match(%r{\Afilter :foo, \{(:awesome=>true|awesome: true)\}\z}) }
   end
 
   describe '#inspect' do
     subject { action.inspect }
 
-    it { is_expected.to eql('<Nanoc::Core::ProcessingActions::Filter :foo, "sJYzLjHGo1e4ytuDfnOLkqrt9QE=">') }
+    it { is_expected.to eql('<Nanoc::Core::ProcessingActions::Filter :foo, "v+eiDx9FKFH7+UBdX93/FK7/pRM=">') }
   end
 
   describe '#== and #eql?' do

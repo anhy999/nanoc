@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
 module Nanoc::Helpers
-  # @see https://nanoc.ws/doc/reference/helpers/#blogging
+  # @see https://nanoc.app/doc/reference/helpers/#blogging
   module Blogging
     # @return [Array]
     def articles
@@ -37,6 +37,7 @@ module Nanoc::Helpers
       attr_accessor :content_proc
       attr_accessor :excerpt_proc
       attr_accessor :title_proc
+      attr_accessor :id_proc
       attr_accessor :title
       attr_accessor :author_name
       attr_accessor :author_uri
@@ -120,8 +121,8 @@ module Nanoc::Helpers
           xml.updated(updated.__nanoc_to_iso8601_time)
 
           # Add links
-          xml.link(rel: 'alternate', href: (alt_link || root_url), type: 'text/html')
-          xml.link(rel: 'self',      href: feed_url,               type: 'application/atom+xml')
+          xml.link(rel: 'alternate', href: alt_link || root_url, type: 'text/html')
+          xml.link(rel: 'self',      href: feed_url,             type: 'application/atom+xml')
 
           # Add author information
           xml.author do
@@ -147,7 +148,7 @@ module Nanoc::Helpers
 
         xml.entry do
           # Add primary attributes
-          xml.id atom_tag_for(article)
+          xml.id id_proc.call(article)
           xml.title title_proc.call(article), type: 'html'
 
           # Add dates
@@ -179,6 +180,7 @@ module Nanoc::Helpers
     # @option params [Proc] :content_proc
     # @option params [Proc] :excerpt_proc
     # @option params [Proc] :title_proc
+    # @option params [Proc] :id_proc
     # @option params [String] :alt_link
     # @option params [String] :id
     # @option params [String] :title
@@ -203,6 +205,7 @@ module Nanoc::Helpers
       builder.content_proc      = params[:content_proc] || ->(a) { a.compiled_content(snapshot: :pre) }
       builder.excerpt_proc      = params[:excerpt_proc] || ->(a) { a[:excerpt] }
       builder.title_proc        = params[:title_proc] || ->(a) { a[:title] }
+      builder.id_proc           = params[:id_proc] || ->(a) { atom_tag_for(a) }
       builder.title             = params[:title] || @item[:title] || @config[:title]
       builder.author_name       = params[:author_name] || @item[:author_name] || @config[:author_name]
       builder.author_uri        = params[:author_uri] || @item[:author_uri] || @config[:author_uri]

@@ -9,14 +9,17 @@ class Nanoc::Filters::SlimTest < Nanoc::TestCase
 
     # Run filter (no assigns)
     result = filter.setup_and_run('html')
+
     assert_match(/<html>.*<\/html>/, result)
 
     # Run filter (assigns without @)
     result = filter.setup_and_run('p = rabbit')
+
     assert_equal('<p>The rabbit is on the branch.</p>', result)
 
     # Run filter (assigns with @)
     result = filter.setup_and_run('p = @rabbit')
+
     assert_equal('<p>The rabbit is on the branch.</p>', result)
   end
 
@@ -24,6 +27,7 @@ class Nanoc::Filters::SlimTest < Nanoc::TestCase
     filter = ::Nanoc::Filters::Slim.new(content: 'The rabbit is on the branch.')
 
     result = filter.setup_and_run('p = yield')
+
     assert_equal('<p>The rabbit is on the branch.</p>', result)
   end
 
@@ -36,12 +40,12 @@ class Nanoc::Filters::SlimTest < Nanoc::TestCase
 
     site =
       Nanoc::Core::Site.new(
-        config: config,
+        config:,
         code_snippets: [],
         data_source: Nanoc::Core::InMemoryDataSource.new(items, layouts),
       )
 
-    compiled_content_cache = Nanoc::Core::CompiledContentCache.new(config: config)
+    compiled_content_cache = Nanoc::Core::CompiledContentCache.new(config:)
     compiled_content_store = Nanoc::Core::CompiledContentStore.new
 
     action_provider =
@@ -55,19 +59,19 @@ class Nanoc::Filters::SlimTest < Nanoc::TestCase
 
     compilation_context =
       Nanoc::Core::CompilationContext.new(
-        action_provider: action_provider,
-        reps: reps,
-        site: site,
-        compiled_content_cache: compiled_content_cache,
-        compiled_content_store: compiled_content_store,
+        action_provider:,
+        reps:,
+        site:,
+        compiled_content_cache:,
+        compiled_content_store:,
       )
 
     Nanoc::Core::ViewContextForCompilation.new(
       reps: Nanoc::Core::ItemRepRepo.new,
       items: Nanoc::Core::ItemCollection.new(config),
       dependency_tracker: Nanoc::Core::DependencyTracker::Null.new,
-      compilation_context: compilation_context,
-      compiled_content_store: compiled_content_store,
+      compilation_context:,
+      compiled_content_store:,
     )
   end
 
@@ -75,11 +79,12 @@ class Nanoc::Filters::SlimTest < Nanoc::TestCase
     layout = Nanoc::Core::Layout.new('', {}, '/layout.slim')
     layout = Nanoc::Core::LayoutView.new(layout, new_view_context)
 
-    assigns = { layout: layout }
+    assigns = { layout: }
 
     filter = ::Nanoc::Filters::Slim.new(assigns)
 
     error = assert_raises(NameError) { filter.setup_and_run('deliberate=failure') }
+
     assert_match(%r{^layout /layout.slim}, error.backtrace[1])
   end
 end
